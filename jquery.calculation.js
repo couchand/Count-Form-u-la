@@ -1,72 +1,11 @@
 /*
- * jQuery Calculation Plug-in
+ * jQuery Count Form-u-la Plug-in
  *
- * Copyright (c) 2007 Dan G. Switzer, II
+ * developed by Andrew Couch
  *
- * Dual licensed under the MIT and GPL licenses:
- *   http://www.opensource.org/licenses/mit-license.php
- *   http://www.gnu.org/licenses/gpl.html
+ * based off the Calculation plugin by Dan G. Switzer, II Revision: 12 Version: 0.4.08
  *
- * Revision: 12
- * Version: 0.4.08
- *
- * Revision History
- * v0.4.08
- * - Added missing semi-colon to lines
- * 
- * v0.4.07
- * - Added trim to parseNumber to fix issue with whitespace in elements
- * 
- * v0.4.06
- * - Added support for calc() "format" callback so that if return value
- *   is null, then value is not updated
- * - Added jQuery.isFunction() check for calc() callbacks
- * 
- * v0.4.05
- * - Added support to the sum() & calc() method for automatically fixing precision
- *   issues (will detect the max decimal spot in the number and fix to that
- *   depth)
- * 
- * v0.4.04
- * - Fixed bug #5420 by adding the defaults.cleanseNumber handler; you can
- *   override this function to handle stripping number of extra digits
- * 
- * v0.4.02
- * - Fixed bug where bind parameter was not being detecting if you specified
- *   a string in method like sum(), avg(), etc.
- * 
- * v0.4a
- * - Fixed bug in aggregate functions so that a string is passed to jQuery's
- *   text() method (since numeric zero is interpetted as false)
- * 
- * v0.4
- * - Added support for -$.99 values
- * - Fixed regex so that decimal values without leading zeros are correctly
- *   parsed
- * - Removed defaults.comma setting
- * - Changed secondary regex that cleans additional formatting from parsed
- *   number
- * 
- * v0.3
- * - Refactored the aggregate methods (since they all use the same core logic)
- *   to use the $.extend() method
- * - Added support for negative numbers in the regex)
- * - Added min/max aggregate methods
- * - Added defaults.onParseError and defaults.onParseClear methods to add logic for
- *   parsing errors
- * 
- * v0.2
- * - Fixed bug in sMethod in calc() (was using getValue, should have been setValue)
- * - Added arguments for sum() to allow auto-binding with callbacks
- * - Added arguments for avg() to allow auto-binding with callbacks
- * 
- * v0.1a
- * - Added semi-colons after object declaration (for min protection)
- * 
- * v0.1
- * - First public release
- *
-*/
+ */
 (function($){
 
 	// set the defaults
