@@ -15,7 +15,7 @@
 });*/
 
 test("Plugin hook created", function(){
-	var hook = $('<p></p>').live_formula
+	var hook = $('<p></p>').live_formula;
 	ok( hook, "The plugin hook exists" );
 	ok( $.isFunction( hook ), "The hook is a function" );
 });
@@ -24,9 +24,10 @@ module("Util");
 
 test("Resolve inputs - number", function(){
 	var num = 5, i, $i;
+
 	[i, $i] = util.resolve_input(num);
 
-	equal( 1, i.length, "one element should be returned" );
+//	equal( 1, i.length, "one element should be returned" );
 	equal( 0, $i.length, "no jQuery elements should be returned" );
 
 	equal( num, i[0], "resoving a number should yield the number itself" );
@@ -34,9 +35,10 @@ test("Resolve inputs - number", function(){
 
 test("Resolve inputs - single selector", function(){
 	var sel = ".out", i, $i;
+
 	[i,$i] = util.resolve_input(sel);
 
-	equal( 1, i.length, "one element should be returned" );
+//	equal( 1, i.length, "one element should be returned" );
 	equal( 1, $i.length, "one jQuery element should be returned" );
 
 	ok( 'undefined' != typeof $i.jquery, 'resolving a selector should yield a jQuery element' );
@@ -49,12 +51,14 @@ test("Resolve inputs - single selector", function(){
 
 test("Resolve inputs - multiple selector", function(){
 	var sel = ".in", i, $i;
+
 	[i, $i] = util.resolve_input(sel);
 
-	equal( 1, i.length, "one element should be returned" );
-	equal( 3, $i.length, "three jQuery element should be returned" );
+//	equal( 1, i.length, "one element should be returned" );
 
 	ok( 'undefined' != typeof $i.jquery, 'resolving a selector should yield a jQuery element' );
+
+	equal( 3, $i.size(), "three jQuery elements should be returned" );
 
 	$i.each(function(){
 
@@ -67,12 +71,26 @@ test("Resolve inputs - multiple selector", function(){
 	});
 });
 
+test("Resolve inputs - object of numbers", function(){
+
+	var x_val = 7, y_val = 9, i, $i;
+
+	[i, $i] = util.resolve_input({ x: x_val, y: y_val });
+
+	ok( 'undefined' != typeof $i.jquery, 'resolving a no selectors should yield an empty jQuery element' );
+
+	equal( 0, $i.size(), "no jQuery elements should be returned" );
+
+//	equal( 2, i.length, 'two constant inputs should be returned' );
+
+	equal( x_val, i.x, 'the input object values should be returned' );
+	equal( y_val, i.y, 'the input object values should be returned' );
+
+});
+
 test("Set all - input fields", function(){
 
-	var str = "test output string";
-
-	var sel = ".in";
-	var $el = $(sel);
+	var str = "test output string", sel = ".in", $el = $(sel);
 
 	util.set_all( $el, str );
 
@@ -89,11 +107,7 @@ module("One selector input");
 
 test("one in one out", function(){
 
-	var $a = $('#a');
-	var $r = $('#r');
-
-	var init_val = 3;
-	var test_val = 7;
+	var $a = $('#a'), $r = $('#r'), init_val = 3, test_val = 7;
 
 	$r.val(init_val);
 	$a.val(init_val);
@@ -108,11 +122,7 @@ test("one in one out", function(){
 
 test("one in many out", function(){
 
-	var $i = $('.in');
-	var $o = $('#r');
-
-	var init_val = 3;
-	var test_val = 7;
+	var $i = $('.in'), $o = $('#r'), init_val = 3, test_val = 7;
 
 	$i.val(init_val);
 	$o.val(init_val);
@@ -131,12 +141,7 @@ module("One selector and function input");
 
 test("basic input function", function(){
 
-	var $a = $('#a');
-	var $r = $('#r');
-
-	var init_val = 3;
-	var test_val = 7;
-	var expected_val = 9;
+	var $a = $('#a'), $r = $('#r'), init_val = 3, test_val = 7, expected_val = 9;
 
 	$r.val(init_val);
 	$a.val(init_val);
@@ -149,25 +154,18 @@ test("basic input function", function(){
 
 });
 
-/*
-module("Named inputs - basic");
+
+/*module("Named inputs - basic");
 
 test("One selector one number",function(){
 
-	var $a = $('#a');
-	var $b = $('#b');
-	var $r = $('#r');
-
-	var init_val = 3;
-	var test_val = 7;
-	var test_constant = 2;
-	var expected_val = test_val + test_constant;
+	var $a = $('#a'), $b = $('#b'), $r = $('#r'), init_val = 3, test_val = 7, test_constant = 2, expected_val = test_val + test_constant, add;
 
 	$r.val(init_val);
 	$a.val(init_val);
 	$b.val(test_constant);
 
-	var add = function(inputs){ alert("here"); return (inputs.a + inputs.b); };
+	add = function(inputs){ alert("here"); return (inputs.a + inputs.b); };
 
 	ok( $.isFunction( add ), 'sanity check' );
 
@@ -177,18 +175,14 @@ test("One selector one number",function(){
 
 	equal( expected_val, $r.val(), 'the function should be applied to the named arguments' );
 
-});
-*/
+});*/
+
 
 module("Options");
 
 test("Set bind event", function(){
 
-	var $a = $('#a');
-	var $r = $('#r');
-
-	var init_val = 3;
-	var test_val = 7;
+	var $a = $('#a'), $r = $('#r'), init_val = 3, test_val = 7;
 
 	$r.val(init_val);
 	$a.val(init_val);

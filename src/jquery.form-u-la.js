@@ -9,14 +9,31 @@
 var util = {
 	resolve_input:
 	  function( input ){
-		var $i = $('');
+		var i = {}, $i = $('');
 		if ( 'number' === typeof input ){
-			return [[input], $i];
+			//return [[input], $i];
+			i[0] = input;
 		}
 		else if ( 'string' === typeof input ){
-			var v = $(input);
-			return [[v], v];
+			var $v = $(input);
+			//return [[$v], $v];
+			i[0] = $v;
+			$i = $v;
 		}
+		else if ( $.isPlainObject( input ) ){
+			$.each( input, function( k, v ){
+				var r, $n;
+				[r, $n] = util.resolve_input(v);
+
+				i[k] = r[0];
+
+				/*if ( !!r[0].jquery ){
+					$inputs = $inputs.add(r[0]);
+				}*/
+
+			});
+		}
+		return [i, $i];
 	},
 	set_all:
 	  function( collection, value ){
@@ -39,20 +56,6 @@ $.extend(options, options_in);
 
 [inputs, $inputs] = util.resolve_input(inputs_in);
 
-/*
-else if ( $.isPlainObject( inputs_in ) ){
-	$.each( inputs_in, function( k, v ){
-		var r = util.resolve_input(v);
-
-		inputs[k] = r;
-
-		if ( !!r.jquery ){
-			$inputs = $inputs.add(r);
-		}
-
-	});
-}
-*/
 	if ( $.isFunction( formula_in ) ){
 		formula = formula_in;
 	}
