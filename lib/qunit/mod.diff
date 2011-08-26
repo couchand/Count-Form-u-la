@@ -1,0 +1,29 @@
+5a6,9
+>  * Modified to have the correct order of expected and actuals in equality assertions
+>  *
+>  * Andrew Couch, August 2011
+>  *
+335c339
+< 	equal: function(actual, expected, message) {
+---
+> 	equal: function(expected, actual, message) {
+339c343
+< 	notEqual: function(actual, expected, message) {
+---
+> 	notEqual: function(expected, actual, message) {
+343c347
+< 	deepEqual: function(actual, expected, message) {
+---
+> 	deepEqual: function(expected, actual, message) {
+347c351
+< 	notDeepEqual: function(actual, expected, message) {
+---
+> 	notDeepEqual: function(expected, actual, message) {
+351c355
+< 	strictEqual: function(actual, expected, message) {
+---
+> 	strictEqual: function(expected, actual, message) {
+355c359
+< 	notStrictEqual: function(actual, expected, message) {
+---
+> 	notStrictEqual: function(expected, actual, message) {

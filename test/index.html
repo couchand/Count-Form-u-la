@@ -1,0 +1,217 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+                    "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <script src="http://code.jquery.com/jquery-latest.js"></script>
+  <link rel="stylesheet" href="file:///media/media/Document/devel/formula/lib/qunit/qunit-git.css" type="text/css" media="screen" />
+<script type="text/javascript" src="file:///media/media/Document/devel/formula/lib/qunit/qunit-mod.js"></script>
+<script type="text/javascript" src="file:///media/media/Document/devel/formula/src/jquery.form-u-la.js"></script>
+  <script>
+
+  $(document).ready(function(){
+
+/*test("Update QUnit", function(){
+	equal( 5, 6, "Expected: 5 Actual: 6" );
+});*/
+
+test("Plugin hook created", function(){
+	var hook = $('<p></p>').live_formula
+	ok( hook, "The plugin hook exists" );
+	ok( $.isFunction( hook ), "The hook is a function" );
+});
+
+module("Util");
+
+test("Resolve inputs - number", function(){
+	var num = 5;
+	equal( num, util.resolve_input(num), "resoving a number should yield the number itself" );
+});
+
+test("Resolve inputs - single selector", function(){
+	var sel = ".out";
+	var $el = util.resolve_input(sel);
+
+	ok( 'undefined' != typeof $el.jquery, 'resolving a selector should yield a jQuery element' );
+	ok( $el.is('input[type="text"]'), 'the right element should be found' );
+	ok( $el.hasClass('number'), 'the right element should be found' );
+
+	equal( 'r', $el.attr('id'), 'the right element should be found' );
+});
+
+test("Resolve inputs - multiple selector", function(){
+	var sel = ".in";
+	var $el = util.resolve_input(sel);
+
+	ok( 'undefined' != typeof $el.jquery, 'resolving a selector should yield a jQuery element' );
+
+	equal( 3, $el.size(), 'the right number of elements should be returned' );
+
+	$el.each(function(){
+
+		var $e = $(this);
+
+		ok( $e.is('input[type="text"]'), 'the right element should be found' );
+		ok( $e.hasClass('number'), 'the right element should be found' );
+		ok( $e.hasClass('i'), 'the right element should be found' );
+
+	});
+});
+
+test("Set all - input fields", function(){
+
+	var str = "test output string";
+
+	var sel = ".in";
+	var $el = $(sel);
+
+	util.set_all( $el, str );
+
+	$(sel).each(function(){
+
+		equal( str, $(this).val(), 'all input fields should be set' );
+
+	});
+
+});
+
+
+module("One selector input");
+
+test("one in one out", function(){
+
+	var $a = $('#a');
+	var $r = $('#r');
+
+	var init_val = 3;
+	var test_val = 7;
+
+	$r.val(init_val);
+	$a.val(init_val);
+
+	$r.live_formula('#a');
+
+	$a.val(test_val).blur();
+
+	equal( test_val, $r.val(), 'the test string should be transferred' );
+
+});
+
+test("one in many out", function(){
+
+	var $i = $('.in');
+	var $o = $('#r');
+
+	var init_val = 3;
+	var test_val = 7;
+
+	$i.val(init_val);
+	$o.val(init_val);
+
+	$i.live_formula('#r');
+
+	$o.val(test_val).blur();
+
+	$i.each(function(){
+		equal( test_val, $(this).val(), 'the test string should be transferred' );
+	});
+
+});
+
+module("One selector and function input");
+
+test("basic input function", function(){
+
+	var $a = $('#a');
+	var $r = $('#r');
+
+	var init_val = 3;
+	var test_val = 7;
+	var expected_val = 9;
+
+	$r.val(init_val);
+	$a.val(init_val);
+
+	$r.live_formula('#a', function(inputs){ return (2 + inputs[0]); });
+
+	$a.val(test_val).blur();
+
+	equal( expected_val, $r.val(), 'the function should be applied' );
+
+});
+
+/*
+module("Named inputs - basic");
+
+test("One selector one number",function(){
+
+	var $a = $('#a');
+	var $b = $('#b');
+	var $r = $('#r');
+
+	var init_val = 3;
+	var test_val = 7;
+	var test_constant = 2;
+	var expected_val = test_val + test_constant;
+
+	$r.val(init_val);
+	$a.val(init_val);
+	$b.val(test_constant);
+
+	var add = function(inputs){ alert("here"); return (inputs.a + inputs.b); };
+
+	ok( $.isFunction( add ), 'sanity check' );
+
+	$r.live_formula({ a: '#a', b: '#b' }, add); 
+
+	$a.val(test_val).blur();
+
+	equal( expected_val, $r.val(), 'the function should be applied to the named arguments' );
+
+});
+*/
+
+module("Options");
+
+test("Set bind event", function(){
+
+	var $a = $('#a');
+	var $r = $('#r');
+
+	var init_val = 3;
+	var test_val = 7;
+
+	$r.val(init_val);
+	$a.val(init_val);
+
+	$r.live_formula('#a', function(inputs){ return (inputs[0]); }, { bind: 'keyup' });
+
+	$a.val(test_val).keyup();
+
+	equal( test_val, $r.val(), 'the newly bound event should activate the calculation' );
+
+});
+
+  });
+  </script>
+  
+</head>
+<body>
+  <h1 id="qunit-header">Count Form-u-la Plugin Tests</h1>
+ <h2 id="qunit-banner"></h2>
+ <div id="qunit-testrunner-toolbar"></div>
+ <h2 id="qunit-userAgent"></h2>
+ <ol id="qunit-tests"></ol>
+ <div id="qunit-fixture">
+
+	<form>
+
+<input type="text" class="i number in" id="a"/>
+<input type="text" class="i number in" id="b"/>
+<input type="text" class="i number in" id="c"/>
+<input type="text" class="number out" id="r"/>
+
+	</form>
+
+ </div>
+</body>
+</html>
