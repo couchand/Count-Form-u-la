@@ -23,30 +23,40 @@ test("Plugin hook created", function(){
 module("Util");
 
 test("Resolve inputs - number", function(){
-	var num = 5;
-	equal( num, util.resolve_input(num), "resoving a number should yield the number itself" );
+	var num = 5, i, $i;
+	[i, $i] = util.resolve_input(num);
+
+	equal( 1, i.length, "one element should be returned" );
+	equal( 0, $i.length, "no jQuery elements should be returned" );
+
+	equal( num, i[0], "resoving a number should yield the number itself" );
 });
 
 test("Resolve inputs - single selector", function(){
-	var sel = ".out";
-	var $el = util.resolve_input(sel);
+	var sel = ".out", i, $i;
+	[i,$i] = util.resolve_input(sel);
 
-	ok( 'undefined' != typeof $el.jquery, 'resolving a selector should yield a jQuery element' );
-	ok( $el.is('input[type="text"]'), 'the right element should be found' );
-	ok( $el.hasClass('number'), 'the right element should be found' );
+	equal( 1, i.length, "one element should be returned" );
+	equal( 1, $i.length, "one jQuery element should be returned" );
 
-	equal( 'r', $el.attr('id'), 'the right element should be found' );
+	ok( 'undefined' != typeof $i.jquery, 'resolving a selector should yield a jQuery element' );
+	ok( $i.is('input[type="text"]'), 'the right element should be found' );
+	ok( $i.hasClass('number'), 'the right element should be found' );
+
+	equal( 'r', $i.attr('id'), 'the right element should be found' );
+	equal( 'r', i[0].attr('id'), 'the right element should be found' );
 });
 
 test("Resolve inputs - multiple selector", function(){
-	var sel = ".in";
-	var $el = util.resolve_input(sel);
+	var sel = ".in", i, $i;
+	[i, $i] = util.resolve_input(sel);
 
-	ok( 'undefined' != typeof $el.jquery, 'resolving a selector should yield a jQuery element' );
+	equal( 1, i.length, "one element should be returned" );
+	equal( 3, $i.length, "three jQuery element should be returned" );
 
-	equal( 3, $el.size(), 'the right number of elements should be returned' );
+	ok( 'undefined' != typeof $i.jquery, 'resolving a selector should yield a jQuery element' );
 
-	$el.each(function(){
+	$i.each(function(){
 
 		var $e = $(this);
 
