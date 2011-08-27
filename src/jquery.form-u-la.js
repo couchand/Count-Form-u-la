@@ -27,9 +27,9 @@ var util = {
 
 				i[k] = r[0];
 
-				/*if ( !!r[0].jquery ){
-					$inputs = $inputs.add(r[0]);
-				}*/
+				if ( !!r[0].jquery ){
+					$i = $i.add(r[0]);
+				}
 
 			});
 		}
