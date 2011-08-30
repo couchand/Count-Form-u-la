@@ -102,7 +102,11 @@ var $outputs = this,
     handler,
     thisIndex,
     formula,
-    options = { bind: 'blur' };//, format: 'number', beforeCalc: null, afterCalc: null };
+    options = {	bind: 'blur',
+		taintable: false };
+	//	format: 'number',
+	//	beforeCalc: null,
+	//	afterCalc: null };
 
 if ( options_in ){
 	$.extend(options, options_in);
@@ -161,7 +165,11 @@ handler = function(){
 	});
 
 	value = formula( locals );
-	$outputs.val( value );
+	$outputs.each(function(){
+		if ( 'undefined' === typeof $(this).data('form-u-la.tainted') ){
+			$(this).val( value );
+		}
+	});
 
 	return;
 
@@ -173,11 +181,18 @@ if ( 0 == $inputs.size() && 0 == selectors.length ){
 	throw "No live inputs found.";
 }
 
+// bind all resolved current inputs
 $inputs.bind(options.bind+'.form-u-la',handler);
 
+// live all selectors in the input
 $.each( selectors, function(k, v){
 	$(v).live(options.bind+'.form-u-la',handler);
 });
+
+if ( options.taintable ){
+	//@TODO: figure out if this should be live
+	$outputs.bind('change', function(){ $(this).data('form-u-la.tainted',true); });
+}
 
 	};
 })(jQuery);

@@ -10,17 +10,32 @@
 	<h1>Example Code</h1>
 	<form>
 
-		<input type="text" class="number in"/>
-		<input type="text" class="number in"/>
-		<input type="text" class="number in"/>
-		<input type="text" class="number out" id="sum"/>
+		in: <input type="text" class="number in1"/>
+		<input type="text" class="number in1"/>
+		<input type="text" class="number in1"/>
+		sum: <input type="text" class="number out" id="sum1"/>
 
 	</form>
 	<code>
 		$('#sum').live_formula('.in',util.sum);
 	</code>
 	<script>
-		$('#sum').live_formula('.in',util.sum);
+		$('#sum1').live_formula('.in1',util.sum);
+	</script>
+
+	<form>
+
+		in: <input type="text" class="number in2"/>
+		<input type="text" class="number in2"/>
+		<input type="text" class="number in2"/>
+		sum: <input type="text" class="number out" id="sum2"/>
+
+	</form>
+	<code>
+		$('#sum').live_formula('.in', util.sum, { bind:'keyup', taintable:true });
+	</code>
+	<script>
+		$('#sum2').live_formula('.in2', util.sum, { bind:'keyup', taintable:true });
 	</script>
 
  </div>

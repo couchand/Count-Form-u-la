@@ -176,7 +176,7 @@ test("basic input function", 1, function(){
 		$a = $(a_sel), $r = $('#r'),
 		init_val = 3, test_val = 7,
 		expected_val = 2 + test_val,
-		test_func = function(inputs){ return (2 + inputs[0]); };
+		test_func = function(input){ return (2 + input); };
 
 	$r.val(init_val);
 	$a.val(init_val);
@@ -522,6 +522,23 @@ test("Set bind event", 1, function(){
 	equal( test_val, $r.val(), 'the newly bound event should activate the calculation' );
 
 });
+
+test('taintable', 1, function(){
+
+	var $a = $('#a'), $r = $('#r'), init_val = 3, taint_val = 7, test_val = 9;
+
+	$a.val(init_val);
+	$r.val(init_val);
+
+	$r.live_formula('#a', function(i){ return i[0]; }, { taintable: true });
+
+	$r.val(taint_val).change();
+	$a.val(test_val).blur();
+
+	equal( taint_val, $r.val(), 'tainted values should not be updated.' );
+
+});
+
 
  });
 
