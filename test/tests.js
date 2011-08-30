@@ -16,8 +16,6 @@
 
   $(function(){
 
-//function unitTests(){
-
 /*test("Update QUnit", function(){
 	equal( 5, 6, "Expected: 5 Actual: 6" );
 });*/
@@ -189,7 +187,7 @@ test("basic input function", function(){
 
 });
 
-module("Named inputs - basic");
+module("Named inputs");
 
 test("One selector one number",function(){
 
@@ -204,6 +202,28 @@ test("One selector one number",function(){
 	$a.val(test_val).blur();
 
 	equal( expected_val, $r.val(), 'the function should be applied to the named arguments' );
+
+});
+
+module('Multiple formulas');
+
+test('Two copy formulas',function(){
+
+	var $a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'), init_val = 3, test_val_a = 7, test_val_b = 9;
+
+	$a.val(init_val);
+	$b.val(init_val);
+	$c.val(init_val);
+	$r.val(init_val);
+
+	$c.live_formula('#a');
+	$r.live_formula('#b');
+
+	$a.val(test_val_a).blur();
+	$b.val(test_val_b).blur();
+
+	equal( test_val_a, $c.val(), 'the formulas should not interfere.' );
+	equal( test_val_b, $r.val(), 'the formulas should not interfere.' );
 
 });
 
@@ -226,4 +246,3 @@ test("Set bind event", function(){
 
  });
 
-//};
