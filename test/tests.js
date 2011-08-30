@@ -121,21 +121,6 @@ test("Resolve inputs - object of selectors", function(){
 
 });
 
-test("Set all - input fields", function(){
-
-	var str = "test output string", sel = ".in", $el = $(sel);
-
-	util.set_all( $el, str );
-
-	$(sel).each(function(){
-
-		equal( str, $(this).val(), 'all input fields should be set' );
-
-	});
-
-});
-
-
 module("One selector input");
 
 test("one in one out", function(){
@@ -174,18 +159,224 @@ module("One selector and function input");
 
 test("basic input function", function(){
 
-	var $a = $('#a'), $r = $('#r'), init_val = 3, test_val = 7, expected_val = 9;
+	var	a_sel = '#a',
+		$a = $(a_sel), $r = $('#r'),
+		init_val = 3, test_val = 7,
+		expected_val = 2 + test_val,
+		test_func = function(inputs){ return (2 + inputs[0]); };
 
 	$r.val(init_val);
 	$a.val(init_val);
 
-	$r.live_formula('#a', function(inputs){ return (2 + inputs[0]); });
+	$r.live_formula(a_sel, test_func);
 
 	$a.val(test_val).blur();
 
 	equal( expected_val, $r.val(), 'the function should be applied' );
 
 });
+
+test('aggregate input function', function(){
+
+	var	input_sel = '.in',
+		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
+		init_val = 3,
+		test_val_a = 7, test_val_b = 9, test_val_c = 4,
+		expected_value_1 = test_val_a + init_val   + init_val,
+		expected_value_2 = test_val_a + test_val_b + init_val,
+		expected_value_3 = test_val_a + test_val_b + test_val_c;
+
+	$r.val(init_val);
+	$(input_sel).val(init_val);
+
+	$r.live_formula(input_sel, function(inputs){
+		var sum = 0;
+		$.each(inputs, function(k, v){
+			sum = sum + v;
+		});
+		return sum;
+	});
+
+	$a.val(test_val_a).blur();
+	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+
+	$b.val(test_val_b).blur();
+	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+
+	$c.val(test_val_c).blur();
+	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+
+});
+
+
+module('Multiple selector inputs and function');
+
+
+
+/*
+test('complex input function', function(){
+
+	var	input_sel = '.in',
+		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
+		init_val = 3,
+		test_val_a = 7, test_val_b = 9, test_val_c = 4,
+		expected_value_1 = test_val_a + test_val_a + init_val   - init_val,
+		expected_value_2 = test_val_a + test_val_a + test_val_b - init_val,
+		expected_value_3 = test_val_a + test_val_a + test_val_b - test_val_c,
+		test_inputs = {
+			a: '#a',
+			c: '#c',
+			inputs: input_sel
+		},
+		test_func = function(i){
+			return i.a + sum(i.inputs) - 2*i.c;
+		};
+
+	$r.val(init_val);
+	$(input_sel).val(init_val);
+
+	$r.live_formula(test_inputs, test_func);
+
+	$a.val(test_val_a).blur();
+	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+
+	$b.val(test_val_b).blur();
+	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+
+	$c.val(test_val_c).blur();
+	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+
+});
+*/
+module('aggregate input helpers');
+
+test('avg', function(){
+
+	var	input_sel = '.in',
+		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
+		init_val = 0,
+		test_val_a = 7, test_val_b = 9, test_val_c = 4,
+		expected_value_1 = (test_val_a + init_val   + init_val  )/3,
+		expected_value_2 = (test_val_a + test_val_b + init_val  )/3,
+		expected_value_3 = (test_val_a + test_val_b + test_val_c)/3;
+
+	$r.val(init_val);
+	$(input_sel).val(init_val);
+
+	$r.live_formula(input_sel,util.avg);
+
+	$a.val(test_val_a).blur();
+	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+
+	$b.val(test_val_b).blur();
+	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+
+	$c.val(test_val_c).blur();
+	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+
+});
+
+test('sum', function(){
+
+	var	input_sel = '.in',
+		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
+		init_val = 0,
+		test_val_a = 7, test_val_b = 9, test_val_c = 4,
+		expected_value_1 = test_val_a + init_val   + init_val,
+		expected_value_2 = test_val_a + test_val_b + init_val,
+		expected_value_3 = test_val_a + test_val_b + test_val_c;
+
+	$r.val(init_val);
+	$(input_sel).val(init_val);
+
+	$r.live_formula(input_sel,util.sum);
+
+	$a.val(test_val_a).blur();
+	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+
+	$b.val(test_val_b).blur();
+	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+
+	$c.val(test_val_c).blur();
+	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+
+});
+
+test('max', function(){
+
+	var	input_sel = '.in',
+		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
+		init_val = 0,
+		test_val_a = 7, test_val_b = 9, test_val_c = 4,
+		expected_value_1 = Math.max(test_val_a, init_val,   init_val  ),
+		expected_value_2 = Math.max(test_val_a, test_val_b, init_val  ),
+		expected_value_3 = Math.max(test_val_a, test_val_b, test_val_c);
+
+	$r.val(init_val);
+	$(input_sel).val(init_val);
+
+	$r.live_formula(input_sel,util.max);
+
+	$a.val(test_val_a).blur();
+	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+
+	$b.val(test_val_b).blur();
+	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+
+	$c.val(test_val_c).blur();
+	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+
+});
+
+test('min', function(){
+
+	var	input_sel = '.in',
+		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
+		init_val = 0,
+		test_val_a = 7, test_val_b = 9, test_val_c = 4,
+		expected_value_1 = Math.min(test_val_a, init_val,   init_val  ),
+		expected_value_2 = Math.min(test_val_a, test_val_b, init_val  ),
+		expected_value_3 = Math.min(test_val_a, test_val_b, test_val_c);
+
+	$r.val(init_val);
+	$(input_sel).val(init_val);
+
+	$r.live_formula(input_sel,util.min);
+
+	$a.val(test_val_a).blur();
+	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+
+	$b.val(test_val_b).blur();
+	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+
+	$c.val(test_val_c).blur();
+	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+
+});
+
+test('count', function(){
+
+	var	input_sel = '.in',
+		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
+		init_val = 0,
+		test_val_a = 7, test_val_b = 9, test_val_c = 4;
+
+	$r.val(init_val);
+	$(input_sel).val(init_val);
+
+	$r.live_formula(input_sel,util.count);
+
+	$a.val(test_val_a).blur();
+	equal(3, $r.val(), 'the function should be continuously applied.');
+
+	$b.val(test_val_b).blur();
+	equal(3, $r.val(), 'the function should be continuously applied.');
+
+	$c.val(test_val_c).blur();
+	equal(3, $r.val(), 'the function should be continuously applied.');
+
+});
+
 
 module("Named inputs");
 
