@@ -122,7 +122,7 @@ if ( options_in ){
 
 handler = function(){
 
-	var locals = {}, value;
+	var locals = {}, value, x;
 
 	[inputs, $inputs, selectors] = util.resolve_input(inputs_in);
 
@@ -130,18 +130,27 @@ handler = function(){
 		var i = 0, input_count = util.count(inputs);
 		if ( !!v.jquery ){
 			if ( 1 == v.size() ){ 
-				locals[k] = parseInt( v.val() );
+				x = parseInt( v.val() );
+				if ( !$.isNaN(x) ){
+					locals[k] = x;
+				}
 			}
 			else if ( 0 != v.size() ){
 				if ( 1 == input_count ){
 					v.each(function(i){
-						locals[i] = parseInt( $(this).val() );
+						x = parseInt( $(this).val() );
+						if ( !$.isNaN(x) ){
+							locals[i] = x;
+						}
 					});
 				}
 				else {
 					locals[k] = {};
 					v.each(function(i){
-						locals[k][i] = parseInt( $(this).val() );
+						x = parseInt( $(this).val() );
+						if ( !$.isNaN(x) ){
+							locals[k][i] = x;
+						}
 					});
 				}
 			}

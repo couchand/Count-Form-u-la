@@ -149,6 +149,25 @@ test("one in many out", 3, function(){
 
 });
 
+module('Handle malformed inputs');
+
+test('empty values', 2, function(){
+
+	var	a_sel = '#a',
+		$a = $(a_sel), $r = $('#r'),
+		init_val = 4;
+
+	$r.val(init_val);
+
+	$r.live_formula(a_sel,util.sum);
+
+	$a.blur();
+
+	ok( !$.isNaN( $r.val() ) && 'NaN' !== $r.val(), 'empty values should be gracefully handled.' );
+	notEqual( init_val, $r.val(), 'event should still update the output' );
+
+});
+
 module("One selector and function input");
 
 test("basic input function", 1, function(){
