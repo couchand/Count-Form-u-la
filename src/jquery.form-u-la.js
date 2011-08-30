@@ -9,7 +9,7 @@
 var util = {
 	resolve_input:
 	  function( input ){
-		var i = {}, $i = $('');
+		var i = {}, $i = $(''), s = [], j, q;
 		if ( 'number' === typeof input ){
 			//return [[input], $i];
 			i[0] = input;
@@ -19,14 +19,19 @@ var util = {
 			//return [[$v], $v];
 			i[0] = $v;
 			$i = $v;
+			s.push(input);
 		}
 		else if ( $.isPlainObject( input ) ){
 			$.each( input, function( k, v ){
 				var r, $n;
-				[r, $n] = util.resolve_input(v);
+				[r, $n, q] = util.resolve_input(v);
 
 				i[k] = r[0];
 				$i.add($n);
+
+				for ( j = 0; j < q.length; j++ ){
+					s.push(q[j]);
+				}
 
 				if ( !!r[0].jquery ){
 					$i = $i.add(r[0]);
@@ -38,7 +43,7 @@ var util = {
 			i[0] = input;
 			$i = input;
 		}*/
-		return [i, $i];
+		return [i, $i, s];
 	},
 
 	min:
@@ -93,6 +98,8 @@ var util = {
 
 var $outputs = this,
     inputs, $inputs,
+    selectors,
+    handler,
     thisIndex,
     formula,
     options = { bind: 'blur' };//, format: 'number', beforeCalc: null, afterCalc: null };
@@ -113,11 +120,11 @@ if ( options_in ){
 		formula = function(i){ return i[0]; };
 	}
 
-var handler = function(){
+handler = function(){
 
-	var locals = {};
+	var locals = {}, value;
 
-	[inputs, $inputs] = util.resolve_input(inputs_in);
+	[inputs, $inputs, selectors] = util.resolve_input(inputs_in);
 
 	$.each(inputs, function(k, v){
 		var i = 0, input_count = util.count(inputs);
@@ -144,32 +151,24 @@ var handler = function(){
 		}
 	});
 
-	var value = formula( locals );
+	value = formula( locals );
 	$outputs.val( value );
 
 	return;
 
 };
 
-[inputs, $inputs] = util.resolve_input(inputs_in);
+[inputs, $inputs, selectors] = util.resolve_input(inputs_in);
 
-if ( 0 == $inputs.size()){
+if ( 0 == $inputs.size() && 0 == selectors.length ){
 	throw "No live inputs found.";
 }
 
 $inputs.bind(options.bind+'.form-u-la',handler);
 
-/*if ( 'undefined' === typeof $.fn.live_formula.currentIndex ){
-	thisIndex = 0;
-	$.fn.live_formula.currentIndex = 1;
-}
-else {
-	thisIndex = $.fn.live_formula.currentIndex++;
-}
-*/
-// doesn't do anything. dumb.
-//$inputs.addClass('form-u-la-input-'+thisIndex);
-//$('.form-u-la-input-'+thisIndex).live(options.bind+'.form-u-la',handler);
+$.each( selectors, function(k, v){
+	$(v).live(options.bind+'.form-u-la',handler);
+});
 
 	};
 })(jQuery);

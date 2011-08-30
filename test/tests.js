@@ -20,7 +20,7 @@
 	equal( 5, 6, "Expected: 5 Actual: 6" );
 });*/
 
-test("Plugin hook created", function(){
+test("Plugin hook created", 2, function(){
 	var hook = $('<p></p>').live_formula;
 	ok( hook, "The plugin hook exists" );
 	ok( $.isFunction( hook ), "The hook is a function" );
@@ -28,23 +28,21 @@ test("Plugin hook created", function(){
 
 module("Util");
 
-test("Resolve inputs - number", function(){
+test("Resolve inputs - number", 2, function(){
 	var num = 5, i, $i;
 
 	[i, $i] = util.resolve_input(num);
 
-//	equal( 1, i.length, "one element should be returned" );
 	equal( 0, $i.length, "no jQuery elements should be returned" );
 
 	equal( num, i[0], "resoving a number should yield the number itself" );
 });
 
-test("Resolve inputs - single selector", function(){
+test("Resolve inputs - single selector", 6, function(){
 	var sel = ".out", i, $i;
 
 	[i,$i] = util.resolve_input(sel);
 
-//	equal( 1, i.length, "one element should be returned" );
 	equal( 1, $i.length, "one jQuery element should be returned" );
 
 	ok( 'undefined' !== typeof $i.jquery, 'resolving a selector should yield a jQuery element' );
@@ -55,12 +53,10 @@ test("Resolve inputs - single selector", function(){
 	equal( 'r', i[0].attr('id'), 'the right element should be found' );
 });
 
-test("Resolve inputs - multiple selector", function(){
+test("Resolve inputs - multiple selector", 11, function(){
 	var sel = ".in", i, $i;
 
 	[i, $i] = util.resolve_input(sel);
-
-//	equal( 1, i.length, "one element should be returned" );
 
 	ok( 'undefined' !== typeof $i.jquery, 'resolving a selector should yield a jQuery element' );
 
@@ -77,7 +73,7 @@ test("Resolve inputs - multiple selector", function(){
 	});
 });
 
-test("Resolve inputs - object of numbers", function(){
+test("Resolve inputs - object of numbers", 4, function(){
 
 	var x_val = 7, y_val = 9, i, $i;
 
@@ -87,14 +83,12 @@ test("Resolve inputs - object of numbers", function(){
 
 	equal( 0, $i.size(), "no jQuery elements should be returned" );
 
-//	equal( 2, i.length, 'two constant inputs should be returned' );
-
 	equal( x_val, i.x, 'the input object values should be returned' );
 	equal( y_val, i.y, 'the input object values should be returned' );
 
 });
 
-test("Resolve inputs - object of selectors", function(){
+test("Resolve inputs - object of selectors", 10, function(){
 
 	var test_val = 7, a_sel = '#a', r_sel = '#r', i, $i, k, $el;
 
@@ -123,7 +117,7 @@ test("Resolve inputs - object of selectors", function(){
 
 module("One selector input");
 
-test("one in one out", function(){
+test("one in one out", 1, function(){
 
 	var $a = $('#a'), $r = $('#r'), init_val = 3, test_val = 7;
 
@@ -138,7 +132,7 @@ test("one in one out", function(){
 
 });
 
-test("one in many out", function(){
+test("one in many out", 3, function(){
 
 	var $i = $('.in'), $o = $('#r'), init_val = 3, test_val = 7;
 
@@ -157,7 +151,7 @@ test("one in many out", function(){
 
 module("One selector and function input");
 
-test("basic input function", function(){
+test("basic input function", 1, function(){
 
 	var	a_sel = '#a',
 		$a = $(a_sel), $r = $('#r'),
@@ -176,7 +170,7 @@ test("basic input function", function(){
 
 });
 
-test('aggregate input function', function(){
+test('aggregate input function', 3, function(){
 
 	var	input_sel = '.in',
 		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
@@ -250,11 +244,11 @@ test('complex input function', function(){
 */
 module('aggregate input helpers');
 
-test('avg', function(){
+test('avg', 3, function(){
 
 	var	input_sel = '.in',
 		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
-		init_val = 0,
+		init_val = 3,
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = (test_val_a + init_val   + init_val  )/3,
 		expected_value_2 = (test_val_a + test_val_b + init_val  )/3,
@@ -276,11 +270,11 @@ test('avg', function(){
 
 });
 
-test('sum', function(){
+test('sum', 3, function(){
 
 	var	input_sel = '.in',
 		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
-		init_val = 0,
+		init_val = 3,
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = test_val_a + init_val   + init_val,
 		expected_value_2 = test_val_a + test_val_b + init_val,
@@ -302,11 +296,11 @@ test('sum', function(){
 
 });
 
-test('max', function(){
+test('max', 3, function(){
 
 	var	input_sel = '.in',
 		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
-		init_val = 0,
+		init_val = 3,
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = Math.max(test_val_a, init_val,   init_val  ),
 		expected_value_2 = Math.max(test_val_a, test_val_b, init_val  ),
@@ -328,11 +322,11 @@ test('max', function(){
 
 });
 
-test('min', function(){
+test('min', 3, function(){
 
 	var	input_sel = '.in',
 		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
-		init_val = 0,
+		init_val = 3,
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = Math.min(test_val_a, init_val,   init_val  ),
 		expected_value_2 = Math.min(test_val_a, test_val_b, init_val  ),
@@ -354,11 +348,11 @@ test('min', function(){
 
 });
 
-test('count', function(){
+test('count', 3, function(){
 
 	var	input_sel = '.in',
 		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
-		init_val = 0,
+		init_val = 3,
 		test_val_a = 7, test_val_b = 9, test_val_c = 4;
 
 	$r.val(init_val);
@@ -380,7 +374,7 @@ test('count', function(){
 
 module("Named inputs");
 
-test("One selector one number",function(){
+test("One selector one number", 1, function(){
 
 	var $a = $('#a'), $b = $('#b'), $r = $('#r'), init_val = 3, test_val = 7, test_constant = 2, expected_val = test_val + test_constant, add;
 
@@ -398,7 +392,7 @@ test("One selector one number",function(){
 
 module('Multiple formulas');
 
-test('Two copy formulas',function(){
+test('Two copy formulas', 2, function(){
 
 	var $a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'), init_val = 3, test_val_a = 7, test_val_b = 9;
 
@@ -418,9 +412,84 @@ test('Two copy formulas',function(){
 
 });
 
+module('Liveness');
+
+test('add class after formula', 4, function(){
+
+	var	test_cls = 'my-test-class',
+		test_sel = '.' + test_cls,
+		$a = $('#a'),
+		$b = $('#b'),
+		$c = $('#c'),
+		$r = $('#r'),
+		init_val = 3,
+		test_val_a = 7, test_val_b = 9, test_val_c = 4,
+		expected_value_1 = test_val_a,
+		expected_value_2 = test_val_a + test_val_b,
+		expected_value_3 = test_val_a + test_val_b + test_val_c,
+		expected_value_4 = test_val_b + test_val_c;
+
+	$('input').val(init_val);
+
+	$a.addClass(test_cls);
+	$r.live_formula(test_sel,util.sum);
+
+	$a.val(test_val_a).blur();
+	equal( expected_value_1, $r.val(), 'the formula should be applied to elements on the page' );
+
+	$b.addClass(test_cls).val(test_val_b).blur();
+	equal( expected_value_2, $r.val(), 'the formula should be applied to new elements' );
+
+	$c.addClass(test_cls).val(test_val_c).blur();
+	equal( expected_value_3, $r.val(), 'the formula should be applied to new elements' );
+
+	$a.removeClass(test_cls);
+	$b.blur();
+	equal( expected_value_4, $r.val(), 'the formula should not be applied to removed elements' );
+
+});
+
+test('add elements after formula', 4, function(){
+
+	var	test_cls = 'my-test-class',
+		test_sel = '.' + test_cls,
+		new_el_id = 'new-el',
+		new_el_sel = '#' + new_el_id,
+		$a = $('#a'),
+		$b = $('<input type="text" class="' + test_cls + '">'),
+		c = '<input type="text" class="' + test_cls + '" id="' + new_el_id + '">',
+		$r = $('#r'),
+		init_val = 3,
+		test_val_a = 7, test_val_b = 9, test_val_c = 4,
+		expected_value_1 = test_val_a,
+		expected_value_2 = test_val_a + test_val_b,
+		expected_value_3 = test_val_a + test_val_b + test_val_c,
+		expected_value_4 = test_val_b + test_val_c;
+
+	$('input').val(init_val);
+
+	$a.addClass(test_cls);
+	$r.live_formula(test_sel,util.sum);
+
+	$a.val(test_val_a).blur();
+	equal( expected_value_1, $r.val(), 'the formula should be applied to elements on the page' );
+
+	$b.appendTo('form').val(test_val_b).blur();
+	equal( expected_value_2, $r.val(), 'the formula should be applied to new elements' );
+
+	$('form').append(c);
+	$(new_el_sel).val(test_val_c).blur();
+	equal( expected_value_3, $r.val(), 'the formula should be applied to new elements' );
+
+	$a.removeClass(test_cls);
+	$b.blur();
+	equal( expected_value_4, $r.val(), 'the formula should not be applied to removed elements' );
+
+});
+
 module("Options");
 
-test("Set bind event", function(){
+test("Set bind event", 1, function(){
 
 	var $a = $('#a'), $r = $('#r'), init_val = 3, test_val = 7;
 
