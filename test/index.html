@@ -111,6 +111,8 @@ test("Resolve inputs - object of selectors", function(){
 
 	ok( i.a.hasClass('in'), 'the right element should be found' );
 	ok( i.r.hasClass('out'), 'the right element should be found' );
+	ok( $i.first().hasClass('in') && $i.last().hasClass('out') || $i.first().hasClass('out') && $i.last().hasClass('in'),
+		'the right elements should be found' );
 
 });
 
@@ -180,7 +182,6 @@ test("basic input function", function(){
 
 });
 
-
 module("Named inputs - basic");
 
 test("One selector one number",function(){
@@ -191,18 +192,13 @@ test("One selector one number",function(){
 	$a.val(init_val);
 	$b.val(test_constant);
 
-	add = function(inputs){ alert("here"); return (inputs.a + inputs.b); };
-
-	ok( $.isFunction( add ), 'sanity check' );
-
-	$r.live_formula({ a: '#a', b: '#b' }, add); 
+	$r.live_formula({ a: '#a', b: '#b' }, function(inputs){ return (inputs.a + inputs.b); });
 
 	$a.val(test_val).blur();
 
 	equal( expected_val, $r.val(), 'the function should be applied to the named arguments' );
 
 });
-
 
 module("Options");
 

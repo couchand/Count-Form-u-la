@@ -46,12 +46,16 @@ var util = {
 (function($){
 	$.fn.live_formula = function( inputs_in, formula_in, options_in ){
 
-var $outputs = this;
 
-var inputs, $inputs = $('');
-var formula;
-var options = { bind: 'blur' };//, format: 'number', beforeCalc: null, afterCalc: null };
-$.extend(options, options_in);
+var $outputs = this,
+    inputs, $inputs = $(''),
+    thisIndex,
+    formula,
+    options = { bind: 'blur' };//, format: 'number', beforeCalc: null, afterCalc: null };
+
+if ( options_in ){
+	$.extend(options, options_in);
+}
 
 
 [inputs, $inputs] = util.resolve_input(inputs_in);
@@ -92,9 +96,16 @@ if ( 0 == $inputs.size()){
 	throw "No live inputs found.";
 }
 
+if ( 'undefined' === typeof $.fn.live_formula.currentIndex ){
+	thisIndex = 0;
+	$.fn.live_formula.currentIndex = 1;
+}
+else {
+	thisIndex = $.fn.live_formula.currentIndex++;
+}
 
-$inputs.live(options.bind+'.form-u-la',handler);
-
+$inputs.addClass('form-u-la-input-'+thisIndex);
+$('.form-u-la-input-'+thisIndex).live(options.bind+'.form-u-la',handler);
 
 	};
 })(jQuery);
