@@ -35,7 +35,7 @@ test("Resolve inputs - number", 2, function(){
 
 	equal( 0, $i.length, "no jQuery elements should be returned" );
 
-	equal( num, i[0], "resoving a number should yield the number itself" );
+	equal( num, i, "resoving a number should yield the number itself" );
 });
 
 test("Resolve inputs - single selector", 6, function(){
@@ -49,8 +49,8 @@ test("Resolve inputs - single selector", 6, function(){
 	ok( $i.is('input[type="text"]'), 'the right element should be found' );
 	ok( $i.hasClass('number'), 'the right element should be found' );
 
-	equal( 'r', $i.attr('id'), 'the right element should be found' );
-	equal( 'r', i[0].attr('id'), 'the right element should be found' );
+	equal( 'r', $i.attr('id'), 'the proper element should be found' );
+	equal( 'r', i.attr('id'), 'the proper element should be found' );
 });
 
 test("Resolve inputs - multiple selector", 11, function(){
@@ -67,8 +67,8 @@ test("Resolve inputs - multiple selector", 11, function(){
 		var $e = $(this);
 
 		ok( $e.is('input[type="text"]'), 'the right element should be found' );
-		ok( $e.hasClass('number'), 'the right element should be found' );
-		ok( $e.hasClass('i'), 'the right element should be found' );
+		ok( $e.hasClass('number'), 'the proper element should be found' );
+		ok( $e.hasClass('i'), 'the proper element should be found' );
 
 	});
 });
@@ -205,6 +205,7 @@ test('aggregate input function', 3, function(){
 	$r.live_formula(input_sel, function(inputs){
 		var sum = 0;
 		$.each(inputs, function(k, v){
+//console.log('s='+(sum+v)+', added '+v+' for '+k);
 			sum = sum + v;
 		});
 		return sum;
@@ -515,7 +516,7 @@ test("Set bind event", 1, function(){
 	$r.val(init_val);
 	$a.val(init_val);
 
-	$r.live_formula('#a', function(inputs){ return (inputs[0]); }, { bind: 'keyup' });
+	$r.live_formula('#a', function(input){ return (input); }, { bind: 'keyup' });
 
 	$a.val(test_val).keyup();
 

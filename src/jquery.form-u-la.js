@@ -12,12 +12,12 @@ var util = {
 		var i = {}, $i = $(''), s = [], j, q;
 		if ( 'number' === typeof input ){
 			//return [[input], $i];
-			i[0] = input;
+			i = input;
 		}
 		else if ( 'string' === typeof input ){
 			var $v = $(input);
 			//return [[$v], $v];
-			i[0] = $v;
+			i = $v;
 			$i = $v;
 			s.push(input);
 		}
@@ -26,15 +26,15 @@ var util = {
 				var r, $n;
 				[r, $n, q] = util.resolve_input(v);
 
-				i[k] = r[0];
+				i[k] = r;
 				$i.add($n);
 
 				for ( j = 0; j < q.length; j++ ){
 					s.push(q[j]);
 				}
 
-				if ( !!r[0].jquery ){
-					$i = $i.add(r[0]);
+				if ( !!r.jquery ){
+					$i = $i.add(r);
 				}
 
 			});
@@ -48,6 +48,9 @@ var util = {
 
 	min:
 	  function( input ){
+		if ( Object !== input.constructor ){
+			return input;
+		}
 		var min = 4294967295;
 		$.each(input, function(k, v){
 			if ( v < min ){
@@ -58,6 +61,9 @@ var util = {
 	},
 	max:
 	  function( input ){
+		if ( Object !== input.constructor ){
+			return input;
+		}
 		var max = -4294967295;
 		$.each(input, function(k, v){
 			if ( v > max ){
@@ -68,6 +74,9 @@ var util = {
 	},
 	sum:
 	  function( input ){
+		if ( Object !== input.constructor ){
+			return input;
+		}
 		var sum = 0;
 		$.each(input, function(k, v){
 			sum = sum + v;
@@ -76,6 +85,9 @@ var util = {
 	},
 	count:
 	  function( input ){
+		if ( Object !== input.constructor ){
+			return 1;
+		}
 		var count = 0;
 		$.each(input, function(k, v){
 			count = count + 1
@@ -84,6 +96,9 @@ var util = {
 	},
 	avg:
 	  function( input ){
+		if ( Object !== input.constructor ){
+			return input;
+		}
 		var sum = 0, count = 0;
 		$.each(input, function(k, v){
 			sum = sum + v;
@@ -121,48 +136,63 @@ if ( options_in ){
 		};
 	}*/
 	else {
-		formula = function(i){ return i[0]; };
+		formula = function(i){ return i; };
 	}
 
 handler = function(){
 
-	var locals = {}, value, x;
+	var locals = {}, value, x, input_count;
 
 	[inputs, $inputs, selectors] = util.resolve_input(inputs_in);
 
-	$.each(inputs, function(k, v){
-		var i = 0, input_count = util.count(inputs);
-		if ( !!v.jquery ){
-			if ( 1 == v.size() ){ 
-				x = parseInt( v.val() );
-				if ( !$.isNaN(x) ){
-					locals[k] = x;
+	input_count = util.count(inputs);
+
+	if ( !!inputs.jquery && 1 == inputs.size() ){
+		x = parseInt( inputs.val() );
+		if ( !$.isNaN(x) ){
+			locals = x;
+		}
+	}
+	else {
+		$.each(inputs, function(k, v){
+			var i = 0;
+			if ( !!v.jquery ){
+				if ( 1 == v.size() ){
+					x = parseInt( v.val() );
+					if ( !$.isNaN(x) ){
+						locals[k] = x;
+					}
+				}
+				else if ( 0 != v.size() ){
+					if ( 1 == input_count ){
+						v.each(function(i){
+							x = parseInt( $(this).val() );
+							if ( !$.isNaN(x) ){
+								locals[i] = x;
+							}
+						});
+					}
+					else {
+						locals[k] = {};
+						v.each(function(i){
+							x = parseInt( $(this).val() );
+							if ( !$.isNaN(x) ){
+								locals[k][i] = x;
+							}
+						});
+					}
 				}
 			}
-			else if ( 0 != v.size() ){
-				if ( 1 == input_count ){
-					v.each(function(i){
-						x = parseInt( $(this).val() );
-						if ( !$.isNaN(x) ){
-							locals[i] = x;
-						}
-					});
+			else {
+				if ( $(v).size() > 0 ){
+					locals[k] = parseInt( $(v).val() );
 				}
 				else {
-					locals[k] = {};
-					v.each(function(i){
-						x = parseInt( $(this).val() );
-						if ( !$.isNaN(x) ){
-							locals[k][i] = x;
-						}
-					});
+					locals[k] = parseInt( v );
 				}
 			}
-		}
-		else {
-			locals[k] = parseInt( v );
-		}
-	});
+		});
+	}
 
 	value = formula( locals );
 	$outputs.each(function(){
