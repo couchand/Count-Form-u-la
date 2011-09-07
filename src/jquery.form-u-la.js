@@ -46,6 +46,28 @@ var util = {
 		return [i, $i, s];
 	},
 
+	getPrecision:
+	  function( stringInput ){
+
+		var	s = stringInput.replace( /^(-?\d*\.\d*)$/, '$1' ),
+			arr, k, digits = 0, places = 0;
+
+		if ( $.isNaN( parseFloat(s) ) ){
+			return null;
+		}
+
+		arr = s.split('.');
+//console.debug(arr);
+		digits = arr[0].split('').length;
+		if ( arr[1] ){
+			places = arr[1].split('').length
+		}
+
+		return digits + places;
+
+	},
+
+	// Aggregate functions.
 	min:
 	  function( input ){
 		if ( Object !== input.constructor ){
@@ -118,7 +140,8 @@ var $outputs = this,
     thisIndex,
     formula,
     options = {	bind: 'blur',
-		taintable: false };
+		taintable: false,
+		precision: 'lowest' };
 	//	format: 'number',
 	//	beforeCalc: null,
 	//	afterCalc: null };
@@ -141,32 +164,88 @@ if ( options_in ){
 
 handler = function(){
 
-	var locals = {}, value, x, input_count;
+	var locals = {}, value, x, input_count, precision, precision_func, p, $tryWrapping;
+
+	precision_func = function(a, b){
+		var pf =	('lowest' === options.precision) ?
+					function(a, b){ return (a < b) ? a : b; }
+				:('highest' === options.precision) ?
+					function(a, b){ return (a > b) ? a : b; }
+				:
+					options.precision;
+
+		return	('undefined' === typeof a) ? (
+				('undefined' === typeof b) ?
+					null
+				:
+					b
+			) : (
+				('undefined' === typeof b) ?
+					a
+				:
+					pf(a,b)
+			)
+
+	};
+
+
 
 	[inputs, $inputs, selectors] = util.resolve_input(inputs_in);
 
 	input_count = util.count(inputs);
 
+//console.log( '' + input_count + ' inputs:' );
+//console.log( inputs );
+
 	if ( !!inputs.jquery && 1 == inputs.size() ){
 		x = parseInt( inputs.val() );
+//console.log(inputs.val());
+		p = util.getPrecision( inputs.val() );
+		inputs.data( 'form-u-la.precision', p );
+		precision = precision_func( precision, p );
+		if ( !$.isNaN(x) ){
+			locals = x;
+		}
+	}
+	else if ( 'number' === typeof inputs ){
+		x = inputs;
+		p = util.getPrecision( '' + x );
+		precision = precision_func( precision, p );
 		if ( !$.isNaN(x) ){
 			locals = x;
 		}
 	}
 	else {
 		$.each(inputs, function(k, v){
+
 			var i = 0;
-			if ( !!v.jquery ){
+			if ( 'number' === typeof v ){
+
+				x = v;
+				p = util.getPrecision( '' + x );
+				precision = precision_func( precision, p );
+				if ( !$.isNaN(x) ){
+					locals[k] = x;
+				}
+			}
+			else if ( !!v.jquery ){
 				if ( 1 == v.size() ){
 					x = parseInt( v.val() );
+					p = util.getPrecision( v.val() );
+					v.data( 'form-u-la.precision', p );
+					precision = precision_func( precision, p );
 					if ( !$.isNaN(x) ){
 						locals[k] = x;
 					}
 				}
-				else if ( 0 != v.size() ){
+				else if ( 1 < v.size() ){
 					if ( 1 == input_count ){
 						v.each(function(i){
-							x = parseInt( $(this).val() );
+							var $t = $(this), val = $t.val();
+							x = parseInt( val );
+							p = util.getPrecision( val );
+							$t.data( 'form-u-la.precision', p );
+							precision = precision_func( precision, p );
 							if ( !$.isNaN(x) ){
 								locals[i] = x;
 							}
@@ -175,7 +254,11 @@ handler = function(){
 					else {
 						locals[k] = {};
 						v.each(function(i){
-							x = parseInt( $(this).val() );
+							var $t = $(this), val = $t.val();
+							x = parseInt( val );
+							p = util.getPrecision( val );
+							$t.data( 'form-u-la.precision', p );
+							precision = precision_func( precision, p );
 							if ( !$.isNaN(x) ){
 								locals[k][i] = x;
 							}
@@ -184,8 +267,13 @@ handler = function(){
 				}
 			}
 			else {
-				if ( $(v).size() > 0 ){
-					locals[k] = parseInt( $(v).val() );
+				$tryWrapping = $(v);
+
+				if ( $tryWrapping.size() > 0 ){
+					locals[k] = parseInt( $tryWrapping.val() );
+					p = util.getPrecision( $tryWrapping.val() );
+					$tryWrapping.data( 'form-u-la.precision', p );
+					precision = precision_func( precision, p );
 				}
 				else {
 					locals[k] = parseInt( v );
@@ -196,8 +284,10 @@ handler = function(){
 
 	value = formula( locals );
 	$outputs.each(function(){
-		if ( 'undefined' === typeof $(this).data('form-u-la.tainted') ){
-			$(this).val( value );
+		var $out = $(this);
+		if ( 'undefined' === typeof $out.data('form-u-la.tainted') ){
+			$out.val( value );
+			$out.data( 'form-u-la.precision', precision );
 		}
 	});
 

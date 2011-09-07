@@ -16,9 +16,20 @@
 
   $(function(){
 
-/*test("Update QUnit", function(){
-	equal( 5, 6, "Expected: 5 Actual: 6" );
-});*/
+/*
+module('Update QUnit');
+
+test('order of expected/actual -- expected to fail!!', 1, function(){
+	equal( 5, 6, 'Expected: 5 Actual: 6 is the expected message above.' );
+});
+
+test('require the number of expected assertions -- expected to fail!!', 1, function(){
+	ok( false, 'there should be an uncaught exception just after this test' );
+});
+test('require the number of expected assertions -- not expected to even show up on the page!!', function(){
+	ok( false, 'there should be an uncaught exception before this assertion' );
+});
+*/
 
 test("Plugin hook created", 2, function(){
 	var hook = $('<p></p>').live_formula;
@@ -112,6 +123,14 @@ test("Resolve inputs - object of selectors", 10, function(){
 	ok( i.r.hasClass('out'), 'the right element should be found' );
 	ok( ($i.first().hasClass('in') && $i.last().hasClass('out')) || (i.first().hasClass('out') && $i.last().hasClass('in')),
 		'the right elements should be found' );
+
+});
+
+test("getPrecision - simple float", 1, function(){
+
+	var p = util.getPrecision("2.5");
+
+	equal( 2, p, 'the precision should be the number of significant figures' );
 
 });
 
@@ -219,6 +238,24 @@ test('aggregate input function', 3, function(){
 
 	$c.val(test_val_c).blur();
 	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+
+});
+
+module('One selector and constant inputs');
+
+test('add constant value', 1, function(){
+
+	var	a_sel = '#a', $a = $(a_sel), $r = $('#r'),
+		init_val = 3, constant_val = 2, test_val = 7, expected_val = test_val + constant_val;
+
+	$r.val(init_val);
+	$a.val(init_val);
+
+	$r.live_formula({ a: a_sel, b: constant_val }, function(ins){ return ins.a + ins.b; });
+
+	$a.val(test_val).blur();
+
+	equal( expected_val, $r.val(), 'the constant val should be pulled from the input' );
 
 });
 
@@ -388,6 +425,52 @@ test('count', 3, function(){
 
 	$c.val(test_val_c).blur();
 	equal(3, $r.val(), 'the function should be continuously applied.');
+
+});
+
+module('Precision');
+
+test('set precision on single selector', 2, function(){
+
+	var a_sel = '#a', $a = $(a_sel), $r = $('#r');
+
+	$r.live_formula(a_sel);
+	$a.val( 2.5 ).blur();
+
+	equal( 2, $a.data( 'form-u-la.precision' ), 'the precision should be set in the input element data' );
+	equal( 2, $r.data( 'form-u-la.precision' ), 'the precision should be set in the output element data' );
+
+});
+
+test('set precision on multiple selector', 4, function(){
+
+	var in_sel = '.in', $inputs = $(in_sel), $r = $('#r');
+
+	$r.live_formula(in_sel,util.sum);
+	$inputs.val( 2.5 ).first().blur();
+
+	$inputs.each(function(){
+		equal( 2, $(this).data( 'form-u-la.precision' ), 'the precision should be set in each input element data' );
+	});
+	equal( 2, $r.data( 'form-u-la.precision' ), 'the precision should be set in the output element data' );
+
+});
+
+test('set precision on object of inputs', 4, function(){
+
+	var	a_sel = '#a', $a = $(a_sel),
+		b_sel = '#b', $b = $(b_sel),
+		c_sel = '#c', $c = $(c_sel),
+		$inputs = $('.in'),
+		$r = $('#r');
+
+	$r.live_formula({ a: a_sel, b: b_sel, c: c_sel }, util.sum);
+	$inputs.val( 2.5 ).first().blur();
+
+	$inputs.each(function(){
+		equal( 2, $(this).data( 'form-u-la.precision' ), 'the precision should be set in each input element data' );
+	});
+	equal( 2, $r.data( 'form-u-la.precision' ), 'the precision should be set in the output element data' );
 
 });
 
