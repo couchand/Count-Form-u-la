@@ -198,7 +198,7 @@ handler = function(){
 //console.log( inputs );
 
 	if ( !!inputs.jquery && 1 == inputs.size() ){
-		x = parseInt( inputs.val() );
+		x = parseFloat( inputs.val() );
 //console.log(inputs.val());
 		p = util.getPrecision( inputs.val() );
 		inputs.data( 'form-u-la.precision', p );
@@ -230,7 +230,7 @@ handler = function(){
 			}
 			else if ( !!v.jquery ){
 				if ( 1 == v.size() ){
-					x = parseInt( v.val() );
+					x = parseFloat( v.val() );
 					p = util.getPrecision( v.val() );
 					v.data( 'form-u-la.precision', p );
 					precision = precision_func( precision, p );
@@ -242,7 +242,7 @@ handler = function(){
 					if ( 1 == input_count ){
 						v.each(function(i){
 							var $t = $(this), val = $t.val();
-							x = parseInt( val );
+							x = parseFloat( val );
 							p = util.getPrecision( val );
 							$t.data( 'form-u-la.precision', p );
 							precision = precision_func( precision, p );
@@ -255,7 +255,7 @@ handler = function(){
 						locals[k] = {};
 						v.each(function(i){
 							var $t = $(this), val = $t.val();
-							x = parseInt( val );
+							x = parseFloat( val );
 							p = util.getPrecision( val );
 							$t.data( 'form-u-la.precision', p );
 							precision = precision_func( precision, p );
@@ -270,13 +270,13 @@ handler = function(){
 				$tryWrapping = $(v);
 
 				if ( $tryWrapping.size() > 0 ){
-					locals[k] = parseInt( $tryWrapping.val() );
+					locals[k] = parseFloat( $tryWrapping.val() );
 					p = util.getPrecision( $tryWrapping.val() );
 					$tryWrapping.data( 'form-u-la.precision', p );
 					precision = precision_func( precision, p );
 				}
 				else {
-					locals[k] = parseInt( v );
+					locals[k] = parseFloat( v );
 				}
 			}
 		});
