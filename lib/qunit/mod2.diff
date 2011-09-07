@@ -1,0 +1,36 @@
+5a6,9
+>  * Modified to have the correct order of expected and actuals in equality assertions
+>  *
+>  * Andrew Couch, August 2011
+>  *
+275,276c279,281
+< 			callback = expected;
+< 			expected = null;
+---
+> 			throw "You must specify the expected number of assertions.";
+> 			//callback = expected;
+> 			//expected = null;
+335c340
+< 	equal: function(actual, expected, message) {
+---
+> 	equal: function(expected, actual, message) {
+339c344
+< 	notEqual: function(actual, expected, message) {
+---
+> 	notEqual: function(expected, actual, message) {
+343c348
+< 	deepEqual: function(actual, expected, message) {
+---
+> 	deepEqual: function(expected, actual, message) {
+347c352
+< 	notDeepEqual: function(actual, expected, message) {
+---
+> 	notDeepEqual: function(expected, actual, message) {
+351c356
+< 	strictEqual: function(actual, expected, message) {
+---
+> 	strictEqual: function(expected, actual, message) {
+355c360
+< 	notStrictEqual: function(actual, expected, message) {
+---
+> 	notStrictEqual: function(expected, actual, message) {
