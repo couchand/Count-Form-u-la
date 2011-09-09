@@ -14,6 +14,17 @@
  *
  */
 
+function globalSetup(){
+	var f = $('<form></form>');
+
+	f.append('<input type="text" class="i number in" id="a"/>');
+	f.append('<input type="text" class="i number in" id="b"/>');
+	f.append('<input type="text" class="i number in" id="c"/>');
+	f.append('<input type="text" class="number out" id="r"/>');
+
+	f.appendTo('#qunit-fixture');
+}
+
   $(function(){
 
 /*
@@ -37,7 +48,7 @@ test("Plugin hook created", 2, function(){
 	ok( $.isFunction( hook ), "The hook is a function" );
 });
 
-module("Util");
+module("Util", { setup: globalSetup });
 
 test("Resolve inputs - number", 2, function(){
 	var num = 5, i, $i;
@@ -127,7 +138,7 @@ test("Resolve inputs - object of selectors", 10, function(){
 });
 
 
-module('getPrecision - default behavior');
+module('getPrecision - default behavior', { setup: globalSetup });
 
 test('empty string', 1, function(){
 	equal( null, util.getPrecision(''), 'the error code is null' );
@@ -155,7 +166,7 @@ test('trailing zeros with decimal point', 1, function(){
 });
 
 
-module('getPrecision - assume zeros are significant');
+module('getPrecision - assume zeros are significant', { setup: globalSetup });
 
 test('trailing zeros after decimal point', 1, function(){
 	equal( 4, util.getPrecision('800.0', 'assumeZeros'), 'zeros after the decimal point should always count'); 
@@ -167,7 +178,7 @@ test('trailing zeros with decimal point', 1, function(){
 	equal( 3, util.getPrecision('800.'), 'zeros before the decimal point should count'); 
 });
 
-module('getPrecision - only count decimal places');
+module('getPrecision - only count decimal places', { setup: globalSetup });
 
 test('integer', 1, function(){
 	equal( 0, util.getPrecision('2', 'decimalPlaces'), 'the precision should be the number of decimal places' );
@@ -189,7 +200,7 @@ test('trailing zeros with decimal point', 1, function(){
 });
 
 
-module('setPrecision - default behavior');
+module('setPrecision - default behavior', { setup: globalSetup });
 
 test('integer not cut off', 1, function(){
 	var ival = 8769, sval = '' + ival;
@@ -217,7 +228,7 @@ test('float rounded down', 1, function(){
 });
 
 
-module("One selector input");
+module("One selector input", { setup: globalSetup });
 
 test("one in one out", 2, function(){
 
@@ -253,7 +264,7 @@ test("one in many out", 3, function(){
 
 });
 
-module('Handle malformed inputs');
+module('Handle malformed inputs', { setup: globalSetup });
 
 test('empty values', 2, function(){
 
@@ -272,7 +283,7 @@ test('empty values', 2, function(){
 
 });
 
-module("One selector and function input");
+module("One selector and function input", { setup: globalSetup });
 
 test("basic input function", 1, function(){
 
@@ -326,7 +337,7 @@ test('aggregate input function', 3, function(){
 
 });
 
-module('One selector and constant inputs');
+module('One selector and constant inputs', { setup: globalSetup });
 
 test('add constant value', 1, function(){
 
@@ -345,7 +356,7 @@ test('add constant value', 1, function(){
 });
 
 
-module('Multiple selector inputs and function');
+module('Multiple selector inputs and function', { setup: globalSetup });
 
 
 
@@ -384,7 +395,7 @@ test('complex input function', function(){
 
 });
 */
-module('aggregate input helpers');
+module('aggregate input helpers', { setup: globalSetup });
 
 test('avg', 3, function(){
 
@@ -513,7 +524,7 @@ test('count', 3, function(){
 
 });
 
-module('Precision');
+module('Precision', { setup: globalSetup });
 
 test('set precision on single selector', 2, function(){
 
@@ -575,7 +586,7 @@ test('truncate output to precision', 1, function(){
 
 });
 
-module("Named inputs");
+module("Named inputs", { setup: globalSetup });
 
 test("One selector one number", 1, function(){
 
@@ -593,7 +604,7 @@ test("One selector one number", 1, function(){
 
 });
 
-module('Multiple formulas');
+module('Multiple formulas', { setup: globalSetup });
 
 test('Two copy formulas', 2, function(){
 
@@ -615,7 +626,7 @@ test('Two copy formulas', 2, function(){
 
 });
 
-module('Liveness');
+module('Liveness', { setup: globalSetup });
 
 test('add class after formula', 4, function(){
 
@@ -690,7 +701,7 @@ test('add elements after formula', 4, function(){
 
 });
 
-module("Options");
+module("Options", { setup: globalSetup });
 
 test("Set bind event", 1, function(){
 
