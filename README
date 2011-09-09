@@ -1,10 +1,22 @@
 Count Form-u-la
 
-A formula building plugin for jQuery
+  A formula building plugin for jQuery
 
 
-developed by Andrew Couch, Fall 2011
+  developed by Andrew Couch, Fall 2011
 
+
+ Contents:
+- Example code
+- MIT License
+
+
+- Example code
+
+See test/example.html for examples of basic usage.  Refer to the unit test code in test/tests.js for more detail.
+
+
+- MIT License
 
 Copyright (C) 2011 by Andrew Couch
 
