@@ -126,13 +126,87 @@ test("Resolve inputs - object of selectors", 10, function(){
 
 });
 
-test("getPrecision - simple float", 1, function(){
 
-	var p = util.getPrecision("2.5");
+module('getPrecision - default behavior');
 
-	equal( 2, p, 'the precision should be the number of significant figures' );
-
+test('empty string', 1, function(){
+	equal( null, util.getPrecision(''), 'the error code is null' );
 });
+test('text input', 1, function(){
+	equal( null, util.getPrecision('foobar'), 'the error code is null' );
+});
+test('integer', 1, function(){
+	equal( 1, util.getPrecision('2'), 'the precision should be the number of significant figures' );
+});
+test('simple float', 1, function(){
+	equal( 2, util.getPrecision('2.5'), 'the precision should be the number of significant figures' );
+});
+test('negative float', 1, function(){
+	equal( 2, util.getPrecision('-2.5'), 'the precision should be the number of significant figures' );
+});
+test('trailing zeros with decimal', 1, function(){
+	equal( 4, util.getPrecision('800.0'), 'zeros after the decimal point should always count'); 
+});
+test('trailing zeros no decimal', 1, function(){
+	equal( 1, util.getPrecision('800'), 'zeros before the decimal point should not count' );
+});
+
+
+module('getPrecision - assume zeros are significant');
+
+test('trailing zeros with decimal', 1, function(){
+	equal( 4, util.getPrecision('800.0', 'assumeZeros'), 'zeros after the decimal point should always count'); 
+});
+test('trailing zeros no decimal', 1, function(){
+	equal( 3, util.getPrecision('800', 'assumeZeros'), 'zeros before the decimal point should count' );
+});
+
+module('getPrecision - only count decimal places');
+
+test('integer', 1, function(){
+	equal( 0, util.getPrecision('2', 'decimalPlaces'), 'the precision should be the number of decimal places' );
+});
+test('simple float', 1, function(){
+	equal( 1, util.getPrecision('2.5', 'decimalPlaces'), 'the precision should be the number of decimal places' );
+});
+test('negative float', 1, function(){
+	equal( 1, util.getPrecision('-2.5', 'decimalPlaces'), 'the precision should be the number of decimal places' );
+});
+test('trailing zeros with decimal', 1, function(){
+	equal( 1, util.getPrecision('800.0', 'decimalPlaces'), 'zeros after the decimal point should always count'); 
+});
+test('trailing zeros no decimal', 1, function(){
+	equal( 0, util.getPrecision('800', 'decimalPlaces'), 'zeros before the decimal point should not count' );
+});
+
+
+module('setPrecision - default behavior');
+
+test('integer not cut off', 1, function(){
+	var ival = 8769, sval = '' + ival;
+	equal( sval, util.setPrecision(ival, 4), 'the integer should pass through' );
+});
+test('integer rounded up', 1, function(){
+	var ival = 8765, sval = '8770';
+	equal( sval, util.setPrecision(ival, 3), 'the number should be rounded to three significant figures' );
+});
+test('integer rounded down', 1, function(){
+	var ival = 8764, sval = '8760';
+	equal( sval, util.setPrecision(ival, 3), 'the number should be rounded to three significant figures' );
+});
+test('float not cut off', 1, function(){
+	var ival = 876.9, sval = '' + ival;
+	equal( sval, util.setPrecision(ival, 4), 'the float should pass through' );
+});
+test('float rounded up', 1, function(){
+	var ival = 876.50, sval = '877';
+	equal( sval, util.setPrecision(ival, 3), 'the number should be rounded to three significant figures' );
+});
+test('float rounded down', 1, function(){
+	var ival = 876.49, sval = '876';
+	equal( sval, util.setPrecision(ival, 3), 'the number should be rounded to three significant figures' );
+});
+
 
 module("One selector input");
 
@@ -180,7 +254,7 @@ test('empty values', 2, function(){
 
 	$r.live_formula(a_sel,util.sum);
 
-	$a.blur();
+	$a.val('').blur();
 
 	ok( !$.isNaN( $r.val() ) && 'NaN' !== $r.val(), 'empty values should be gracefully handled.' );
 	notEqual( init_val, $r.val(), 'event should still update the output' );
@@ -434,7 +508,7 @@ test('set precision on single selector', 2, function(){
 
 	var a_sel = '#a', $a = $(a_sel), $r = $('#r');
 
-	$r.live_formula(a_sel);
+	$r.live_formula(a_sel, util.copy, { precision: 'lowest' });
 	$a.val( 2.5 ).blur();
 
 	equal( 2, $a.data( 'form-u-la.precision' ), 'the precision should be set in the input element data' );
@@ -446,7 +520,7 @@ test('set precision on multiple selector', 4, function(){
 
 	var in_sel = '.in', $inputs = $(in_sel), $r = $('#r');
 
-	$r.live_formula(in_sel,util.sum);
+	$r.live_formula(in_sel, util.sum, { precision: 'lowest' });
 	$inputs.val( 2.5 ).first().blur();
 
 	$inputs.each(function(){
@@ -464,7 +538,7 @@ test('set precision on object of inputs', 4, function(){
 		$inputs = $('.in'),
 		$r = $('#r');
 
-	$r.live_formula({ a: a_sel, b: b_sel, c: c_sel }, util.sum);
+	$r.live_formula({ a: a_sel, b: b_sel, c: c_sel }, util.sum, { precision: 'lowest' });
 	$inputs.val( 2.5 ).first().blur();
 
 	$inputs.each(function(){
@@ -474,6 +548,21 @@ test('set precision on object of inputs', 4, function(){
 
 });
 
+test('truncate output to precision', 1, function(){
+
+	var	a_sel = '#a', $a = $(a_sel),
+		b_sel = '#b', $b = $(b_sel),
+		$r = $('#r');
+
+	$r.live_formula({ a: a_sel, b: b_sel }, function(i){
+		return (i.a + i.b)/2;
+	}, { precision: 'lowest' });
+	$a.val( "2.5" );
+	$b.val( "3.0" ).blur();
+
+	equal( "2.8", $r.val(), 'the output should be truncated to the precision' );
+
+});
 
 module("Named inputs");
 

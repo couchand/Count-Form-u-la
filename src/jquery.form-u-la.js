@@ -47,24 +47,49 @@ var util = {
 	},
 
 	getPrecision:
-	  function( stringInput ){
+	  function( stringInput, mode ){
 
-		var	s = stringInput.replace( /^(-?\d*\.\d*)$/, '$1' ),
+		var	s = stringInput.replace( /^(-?\d+\.?\d*)$/, '$1' ),
 			arr, k, digits = 0, places = 0;
 
 		if ( $.isNaN( parseFloat(s) ) ){
 			return null;
 		}
 
-		arr = s.split('.');
+		arr = s.replace(/^-/, '').split('.');
 //console.debug(arr);
-		digits = arr[0].split('').length;
 		if ( arr[1] ){
-			places = arr[1].split('').length
+			places = arr[1].split('').length;
+		}
+		else if ( 'assumeZeros' !== mode ) {
+			arr[0] = arr[0].replace( /0+$/, '' );
 		}
 
-		return digits + places;
+		digits = arr[0].split('').length;
 
+		return ( 'decimalPlaces' === mode ) ? places : digits + places;
+
+	},
+
+	setPrecision:
+	  function( numberInput, precision ){
+		var str = '' + numberInput, digits = 0, falsePrecision, decimalShift, places, numVal = numberInput;
+//		str = str.replace( new RegExp('^(-?\\d{' + precision + '})(\\d*)$'), '$1X__FORM-U-LA__X$2' );
+//		new_str = str.split( 'X__FORM-U-LA__X' );
+
+		digits = str.replace( /\.\d*$/, '' ).replace( /^-/, '' ).split('').length;
+		falsePrecision = digits - precision;
+
+		if ( 0 <= falsePrecision ){
+			decimalShift = Math.pow( 10, falsePrecision );
+			numVal = Math.round( numberInput / decimalShift ) * decimalShift;
+		}
+		else {
+			places = -falsePrecision;
+			numVal = numberInput.toFixed(places);
+		}
+
+		return '' + numVal;
 	},
 
 	// Aggregate functions.
@@ -97,7 +122,7 @@ var util = {
 	sum:
 	  function( input ){
 		if ( Object !== input.constructor ){
-			return input;
+			return ('undefined' === typeof input) ? 0 : input;
 		}
 		var sum = 0;
 		$.each(input, function(k, v){
@@ -108,7 +133,7 @@ var util = {
 	count:
 	  function( input ){
 		if ( Object !== input.constructor ){
-			return 1;
+			return ('undefined' === typeof input) ? 0 : 1;
 		}
 		var count = 0;
 		$.each(input, function(k, v){
@@ -127,6 +152,10 @@ var util = {
 			count = count + 1
 		});
 		return (sum/count);
+	},
+	copy:
+	  function(i){
+		return i;
 	}
 };
 
@@ -141,7 +170,7 @@ var $outputs = this,
     formula,
     options = {	bind: 'blur',
 		taintable: false,
-		precision: 'lowest' };
+		precision: 'ignore' };
 	//	format: 'number',
 	//	beforeCalc: null,
 	//	afterCalc: null };
@@ -159,15 +188,27 @@ if ( options_in ){
 		};
 	}*/
 	else {
-		formula = function(i){ return i; };
+		formula = util.copy;
 	}
 
 handler = function(){
 
-	var locals = {}, value, x, input_count, precision, precision_func, p, $tryWrapping;
+	var	locals = {}, value, x,
+		input_count, precision, precision_func, p,
+		$tryWrapping, allTainted = true;
+
+	$outputs.each(function(){
+		allTainted = allTainted && $(this).data('form-u-la.tainted');
+	});
+
+	if ( allTainted ){
+		return;
+	}
 
 	precision_func = function(a, b){
-		var pf =	('lowest' === options.precision) ?
+		var pf =	('ignore' === options.precision) ?
+					function(a, b){ return 0; }
+				:('lowest' === options.precision) ?
 					function(a, b){ return (a < b) ? a : b; }
 				:('highest' === options.precision) ?
 					function(a, b){ return (a > b) ? a : b; }
@@ -283,6 +324,16 @@ handler = function(){
 	}
 
 	value = formula( locals );
+//if ( 'number' !== typeof value ){
+//console.log(value);
+//}
+//	value = value.toFixed(precision);
+//console.log(value);
+
+	if ( 'ignore' !== options.precision ){
+		value = util.setPrecision( value, precision );
+	}
+
 	$outputs.each(function(){
 		var $out = $(this);
 		if ( 'undefined' === typeof $out.data('form-u-la.tainted') ){
@@ -301,6 +352,11 @@ if ( 0 == $inputs.size() && 0 == selectors.length ){
 	throw "No live inputs found.";
 }
 
+if ( options.taintable ){
+	//@TODO: figure out if this should be live
+	$outputs.bind('change', function(){ $(this).data('form-u-la.tainted',true); });
+}
+
 // bind all resolved current inputs
 $inputs.bind(options.bind+'.form-u-la',handler);
 
@@ -308,11 +364,6 @@ $inputs.bind(options.bind+'.form-u-la',handler);
 $.each( selectors, function(k, v){
 	$(v).live(options.bind+'.form-u-la',handler);
 });
-
-if ( options.taintable ){
-	//@TODO: figure out if this should be live
-	$outputs.bind('change', function(){ $(this).data('form-u-la.tainted',true); });
-}
 
 	};
 })(jQuery);
