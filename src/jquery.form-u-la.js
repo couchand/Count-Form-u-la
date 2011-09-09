@@ -23,8 +23,9 @@ var util = {
 		}
 		else if ( $.isPlainObject( input ) ){
 			$.each( input, function( k, v ){
-				var r, $n;
-				[r, $n, q] = util.resolve_input(v);
+				var r, $n, t;
+				t = util.resolve_input(v);
+				r = t[0]; $n = t[1]; q = t[2];
 
 				i[k] = r;
 				$i.add($n);
@@ -168,6 +169,7 @@ var $outputs = this,
     handler,
     thisIndex,
     formula,
+    temp,
     options = {	bind: 'blur',
 		taintable: false,
 		precision: 'ignore' };
@@ -193,7 +195,7 @@ if ( options_in ){
 
 handler = function(){
 
-	var	locals = {}, value, x,
+	var	locals = {}, value, x, t,
 		input_count, precision, precision_func, p,
 		$tryWrapping, allTainted = true;
 
@@ -231,7 +233,8 @@ handler = function(){
 
 
 
-	[inputs, $inputs, selectors] = util.resolve_input(inputs_in);
+	t = util.resolve_input(inputs_in);
+	inputs = t[0]; $inputs = t[1]; selectors = t[2];
 
 	input_count = util.count(inputs);
 
@@ -352,7 +355,8 @@ handler = function(){
 
 };
 
-[inputs, $inputs, selectors] = util.resolve_input(inputs_in);
+temp = util.resolve_input(inputs_in);
+inputs = temp[0]; $inputs = temp[1]; selectors = temp[2];
 
 if ( 0 == $inputs.size() && 0 == selectors.length ){
 	throw "No live inputs found.";
