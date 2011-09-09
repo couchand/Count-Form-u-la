@@ -166,6 +166,7 @@ var $outputs = this,
     inputs, $inputs,
     selectors,
     handler,
+    calculate = function(){ $(this).trigger('calculate.form-u-la'); },
     thisIndex,
     formula,
     options = {	bind: 'blur',
@@ -367,11 +368,19 @@ else {
 }
 
 // bind all resolved current inputs
-$inputs.bind(options.bind+'.form-u-la',handler);
+$inputs.bind('calculate.form-u-la',handler);
 
 // live all selectors in the input
 $.each( selectors, function(k, v){
-	$(v).live(options.bind+'.form-u-la',handler);
+	$(v).live('calculate.form-u-la',handler);
+});
+
+// bind all resolved current inputs
+$inputs.bind(options.bind+'.form-u-la', calculate);
+
+// live all selectors in the input
+$.each( selectors, function(k, v){
+	$(v).live(options.bind+'.form-u-la', calculate);
 });
 
 	};
