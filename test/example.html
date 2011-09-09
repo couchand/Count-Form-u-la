@@ -38,6 +38,21 @@
 		$('#sum2').live_formula( '.in2', util.sum, { bind: 'keyup', taintable: true } );
 	</script>
 
+	<form>
+
+		in: <input type="text" class="number in3"/>
+		<input type="text" class="number in3"/>
+		<input type="text" class="number in3"/>
+		avg: <input type="text" class="number out" id="avg3"/>
+
+	</form>
+	<code>
+		$('#avg').live_formula( '.in', util.avg, { precision: 'lowest' } );
+	</code>
+	<script>
+		$('#avg3').live_formula( '.in3', util.avg, { precision: 'lowest' } );
+	</script>
+
  </div>
 </body>
 </html>

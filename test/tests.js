@@ -144,21 +144,27 @@ test('simple float', 1, function(){
 test('negative float', 1, function(){
 	equal( 2, util.getPrecision('-2.5'), 'the precision should be the number of significant figures' );
 });
-test('trailing zeros with decimal', 1, function(){
+test('trailing zeros after decimal point', 1, function(){
 	equal( 4, util.getPrecision('800.0'), 'zeros after the decimal point should always count'); 
 });
-test('trailing zeros no decimal', 1, function(){
-	equal( 1, util.getPrecision('800'), 'zeros before the decimal point should not count' );
+test('trailing zeros no decimal point', 1, function(){
+	equal( 1, util.getPrecision('800'), 'zeros without a decimal point should not count' );
+});
+test('trailing zeros with decimal point', 1, function(){
+	equal( 3, util.getPrecision('800.'), 'zeros before the decimal point should count'); 
 });
 
 
 module('getPrecision - assume zeros are significant');
 
-test('trailing zeros with decimal', 1, function(){
+test('trailing zeros after decimal point', 1, function(){
 	equal( 4, util.getPrecision('800.0', 'assumeZeros'), 'zeros after the decimal point should always count'); 
 });
-test('trailing zeros no decimal', 1, function(){
-	equal( 3, util.getPrecision('800', 'assumeZeros'), 'zeros before the decimal point should count' );
+test('trailing zeros no decimal point', 1, function(){
+	equal( 3, util.getPrecision('800', 'assumeZeros'), 'zeros without a decimal point should count' );
+});
+test('trailing zeros with decimal point', 1, function(){
+	equal( 3, util.getPrecision('800.'), 'zeros before the decimal point should count'); 
 });
 
 module('getPrecision - only count decimal places');
@@ -172,11 +178,14 @@ test('simple float', 1, function(){
 test('negative float', 1, function(){
 	equal( 1, util.getPrecision('-2.5', 'decimalPlaces'), 'the precision should be the number of decimal places' );
 });
-test('trailing zeros with decimal', 1, function(){
+test('trailing zeros after decimal point', 1, function(){
 	equal( 1, util.getPrecision('800.0', 'decimalPlaces'), 'zeros after the decimal point should always count'); 
 });
-test('trailing zeros no decimal', 1, function(){
-	equal( 0, util.getPrecision('800', 'decimalPlaces'), 'zeros before the decimal point should not count' );
+test('trailing zeros no decimal point', 1, function(){
+	equal( 0, util.getPrecision('800', 'decimalPlaces'), 'zeros without a decimal point should not count' );
+});
+test('trailing zeros with decimal point', 1, function(){
+	equal( 0, util.getPrecision('800.', 'decimalPlaces'), 'zeros before the decimal point should not count'); 
 });
 
 
@@ -210,7 +219,7 @@ test('float rounded down', 1, function(){
 
 module("One selector input");
 
-test("one in one out", 1, function(){
+test("one in one out", 2, function(){
 
 	var $a = $('#a'), $r = $('#r'), init_val = 3, test_val = 7;
 
@@ -222,6 +231,8 @@ test("one in one out", 1, function(){
 	$a.val(test_val).blur();
 
 	equal( test_val, $r.val(), 'the test string should be transferred' );
+
+	ok( $r.attr('disabled'), 'the output field should be disabled.' );
 
 });
 
@@ -252,7 +263,7 @@ test('empty values', 2, function(){
 
 	$r.val(init_val);
 
-	$r.live_formula(a_sel,util.sum);
+	$r.live_formula('.in',util.sum);
 
 	$a.val('').blur();
 
@@ -696,7 +707,7 @@ test("Set bind event", 1, function(){
 
 });
 
-test('taintable', 1, function(){
+test('taintable', 2, function(){
 
 	var $a = $('#a'), $r = $('#r'), init_val = 3, taint_val = 7, test_val = 9;
 
@@ -709,6 +720,8 @@ test('taintable', 1, function(){
 	$a.val(test_val).blur();
 
 	equal( taint_val, $r.val(), 'tainted values should not be updated.' );
+
+	ok( !$r.attr('disabled'), 'the output field should not be disabled.' );
 
 });
 

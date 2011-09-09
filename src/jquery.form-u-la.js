@@ -49,19 +49,19 @@ var util = {
 	getPrecision:
 	  function( stringInput, mode ){
 
-		var	s = stringInput.replace( /^(-?\d+\.?\d*)$/, '$1' ),
+		var	s = stringInput.replace( /^-?(\d+\.?\d*)$/, '$1' ),
 			arr, k, digits = 0, places = 0;
 
 		if ( $.isNaN( parseFloat(s) ) ){
 			return null;
 		}
 
-		arr = s.replace(/^-/, '').split('.');
+		arr = s.split('.');
 //console.debug(arr);
 		if ( arr[1] ){
 			places = arr[1].split('').length;
 		}
-		else if ( 'assumeZeros' !== mode ) {
+		else if ( ( -1 === s.indexOf('.') ) && ( 'assumeZeros' !== mode ) ) {
 			arr[0] = arr[0].replace( /0+$/, '' );
 		}
 
@@ -207,7 +207,7 @@ handler = function(){
 
 	precision_func = function(a, b){
 		var pf =	('ignore' === options.precision) ?
-					function(a, b){ return 0; }
+					function(a, b){ return Number.NaN; }
 				:('lowest' === options.precision) ?
 					function(a, b){ return (a < b) ? a : b; }
 				:('highest' === options.precision) ?
@@ -311,13 +311,19 @@ handler = function(){
 				$tryWrapping = $(v);
 
 				if ( $tryWrapping.size() > 0 ){
-					locals[k] = parseFloat( $tryWrapping.val() );
-					p = util.getPrecision( $tryWrapping.val() );
-					$tryWrapping.data( 'form-u-la.precision', p );
-					precision = precision_func( precision, p );
+					x = parseFloat( $tryWrapping.val() );
+					if ( !$.isNaN(x) ){
+						locals[k] = x;
+						p = util.getPrecision( $tryWrapping.val() );
+						$tryWrapping.data( 'form-u-la.precision', p );
+						precision = precision_func( precision, p );
+					}
 				}
 				else {
-					locals[k] = parseFloat( v );
+					x = parseFloat( v );
+					if ( !$.isNaN(x) ){
+						locals[k] = x;
+					}
 				}
 			}
 		});
@@ -355,6 +361,9 @@ if ( 0 == $inputs.size() && 0 == selectors.length ){
 if ( options.taintable ){
 	//@TODO: figure out if this should be live
 	$outputs.bind('change', function(){ $(this).data('form-u-la.tainted',true); });
+}
+else {
+	$outputs.attr('disabled','disabled');
 }
 
 // bind all resolved current inputs
