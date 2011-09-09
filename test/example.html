@@ -8,6 +8,8 @@
 <body>
 	<h4>Count Form-u-la jQuery Plugin</h4>
 	<h1>Example Code</h1>
+
+	<h3>Basic sum</h3>
 	<form>
 
 		in: <input type="text" class="number in1"/>
@@ -23,6 +25,7 @@
 		$('#sum1').live_formula( '.in1', util.sum );
 	</script>
 
+	<h3>Bind calculation to keyupevent, Taintable outputs can be changed</h3>
 	<form>
 
 		in: <input type="text" class="number in2"/>
@@ -38,6 +41,7 @@
 		$('#sum2').live_formula( '.in2', util.sum, { bind: 'keyup', taintable: true } );
 	</script>
 
+	<h3>Basic average</h3>
 	<form>
 
 		in: <input type="text" class="number in3"/>
@@ -47,10 +51,26 @@
 
 	</form>
 	<code>
+		$('#avg').live_formula( '.in', util.avg );
+	</code>
+	<script>
+		$('#avg3').live_formula( '.in3', util.avg );
+	</script>
+
+	<h4>Keep track of significant figures</h4>
+	<form>
+
+		in: <input type="text" class="number in4"/>
+		<input type="text" class="number in4"/>
+		<input type="text" class="number in4"/>
+		avg: <input type="text" class="number out" id="avg4"/>
+
+	</form>
+	<code>
 		$('#avg').live_formula( '.in', util.avg, { precision: 'lowest' } );
 	</code>
 	<script>
-		$('#avg3').live_formula( '.in3', util.avg, { precision: 'lowest' } );
+		$('#avg4').live_formula( '.in4', util.avg, { precision: 'lowest' } );
 	</script>
 
  </div>
