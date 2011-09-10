@@ -51,9 +51,10 @@ test("Plugin hook created", 2, function(){
 module("Util", { setup: globalSetup });
 
 test("Resolve inputs - number", 2, function(){
-	var num = 5, i, $i;
+	var num = 5, i, $i, t;
 
-	[i, $i] = util.resolve_input(num);
+	t = util.resolve_input(num);
+	i = t[0]; $i = t[1];
 
 	equal( 0, $i.length, "no jQuery elements should be returned" );
 
@@ -61,9 +62,10 @@ test("Resolve inputs - number", 2, function(){
 });
 
 test("Resolve inputs - single selector", 6, function(){
-	var sel = ".out", i, $i;
+	var sel = ".out", i, $i, t;
 
-	[i,$i] = util.resolve_input(sel);
+	t = util.resolve_input(sel);
+	i = t[0]; $i = t[1];
 
 	equal( 1, $i.length, "one jQuery element should be returned" );
 
@@ -76,9 +78,10 @@ test("Resolve inputs - single selector", 6, function(){
 });
 
 test("Resolve inputs - multiple selector", 11, function(){
-	var sel = ".in", i, $i;
+	var sel = ".in", i, $i, t;
 
-	[i, $i] = util.resolve_input(sel);
+	t = util.resolve_input(sel);
+	i = t[0]; $i = t[1];
 
 	ok( 'undefined' !== typeof $i.jquery, 'resolving a selector should yield a jQuery element' );
 
@@ -97,9 +100,10 @@ test("Resolve inputs - multiple selector", 11, function(){
 
 test("Resolve inputs - object of numbers", 4, function(){
 
-	var x_val = 7, y_val = 9, i, $i;
+	var x_val = 7, y_val = 9, i, $i, t;
 
-	[i, $i] = util.resolve_input({ x: x_val, y: y_val });
+	t = util.resolve_input({ x: x_val, y: y_val });
+	i = t[0]; $i = t[1];
 
 	ok( 'undefined' !== typeof $i.jquery, 'resolving a no selectors should yield an empty jQuery element' );
 
@@ -112,12 +116,13 @@ test("Resolve inputs - object of numbers", 4, function(){
 
 test("Resolve inputs - object of selectors", 10, function(){
 
-	var test_val = 7, a_sel = '#a', r_sel = '#r', i, $i, k, $el;
+	var test_val = 7, a_sel = '#a', r_sel = '#r', i, $i, k, $el, t;
 
 	$(a_sel).val(test_val);
 	$(r_sel).val(test_val);
 
-	[i, $i] = util.resolve_input({ a: a_sel, r: r_sel });
+	t = util.resolve_input({ a: a_sel, r: r_sel });
+	i = t[0]; $i = t[1];
 
 	equal( 2, $i.size(), 'all selectors in the object should be added to the returned jquery wrapper' );
 
