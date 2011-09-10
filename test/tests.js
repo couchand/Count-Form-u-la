@@ -741,6 +741,34 @@ test('taintable', 2, function(){
 
 });
 
+test('default value', 1, function(){
+
+	var $a = $('#a'), $r = $('#r'), default_val = 7;
+
+	$r.val('');
+
+	$r.live_formula('#a', util.copy, { defaultValue: default_val });
+
+	$a.val('').blur();
+
+	equal( default_val, $r.val(), 'Non-numeric inputs should be defaulted' );
+
+});
+
+test('default value zero', 1, function(){
+
+	var $a = $('#a'), $r = $('#r'), default_val = 0;
+
+	$r.val('');
+
+	$r.live_formula('#a', util.copy, { defaultValue: default_val });
+
+	$a.val('').blur();
+
+	equal( default_val, $r.val(), 'Non-numeric inputs should be defaulted' );
+
+});
+
 
  });
 

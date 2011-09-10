@@ -251,6 +251,9 @@ handler = function(){
 		if ( !$.isNaN(x) ){
 			locals = x;
 		}
+		else if ( options.defaultValue ){
+			locals = options.defaultValue;
+		}
 	}
 	else if ( 'number' === typeof inputs ){
 		x = inputs;
@@ -258,6 +261,9 @@ handler = function(){
 		precision = precision_func( precision, p );
 		if ( !$.isNaN(x) ){
 			locals = x;
+		}
+		else if ( options.defaultValue ){
+			locals = options.defaultValue;
 		}
 	}
 	else {
@@ -272,6 +278,9 @@ handler = function(){
 				if ( !$.isNaN(x) ){
 					locals[k] = x;
 				}
+				else if ( options.defaultValue ){
+					locals[k] = options.defaultValue;
+				}
 			}
 			else if ( !!v.jquery ){
 				if ( 1 == v.size() ){
@@ -281,6 +290,9 @@ handler = function(){
 					precision = precision_func( precision, p );
 					if ( !$.isNaN(x) ){
 						locals[k] = x;
+					}
+					else if ( options.defaultValue ){
+						locals[k] = options.defaultValue;
 					}
 				}
 				else if ( 1 < v.size() ){
@@ -294,6 +306,9 @@ handler = function(){
 							if ( !$.isNaN(x) ){
 								locals[i] = x;
 							}
+							else if ( options.defaultValue ){
+								locals[i] = options.defaultValue;
+							}
 						});
 					}
 					else {
@@ -306,6 +321,9 @@ handler = function(){
 							precision = precision_func( precision, p );
 							if ( !$.isNaN(x) ){
 								locals[k][i] = x;
+							}
+							else if ( options.defaultValue ){
+								locals[k][i] = options.defaultValue;
 							}
 						});
 					}
@@ -322,11 +340,17 @@ handler = function(){
 						$tryWrapping.data( 'form-u-la.precision', p );
 						precision = precision_func( precision, p );
 					}
+					else if ( options.defaultValue ){
+						locals[k] = options.defaultValue;
+					}
 				}
 				else {
 					x = parseFloat( v );
 					if ( !$.isNaN(x) ){
 						locals[k] = x;
+					}
+					else if ( options.defaultValue ){
+						locals[k] = options.defaultValue;
 					}
 				}
 			}
