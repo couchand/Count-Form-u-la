@@ -73,6 +73,23 @@
 		$('#avg4').live_formula( '.in4', util.avg, { precision: 'lowest' } );
 	</script>
 
+	<h4>Named inputs</h4>
+	<form>
+
+		a: <input type="text" class="number in" id="a" value="0" />
+		b: <input type="text" class="number in" id="b" value="0" />
+		c: <input type="text" class="number in" id="c" value="0" />
+		result: <input type="text" class="number out" id="result"/>
+
+	</form>
+	<code>
+		$('#result').live_formula({ a: '#a', b: '#b', c: '#c' }, function(i){ return i.a + i.b + i.c });
+	</code>
+	<script>
+		$('#result').live_formula({ a: '#a', b: '#b', c: '#c' }, function(i){ return i.a + i.b + i.c });
+	</script>
+
+
  </div>
 </body>
 </html>
