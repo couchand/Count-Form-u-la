@@ -352,6 +352,10 @@ handler = function(){
 		}
 	});
 
+	$outputs.each(function(){
+		$(this).trigger('calculate.form-u-la');
+	});
+
 	return;
 
 };

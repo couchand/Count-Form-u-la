@@ -611,7 +611,7 @@ test("One selector one number", 1, function(){
 
 module('Multiple formulas', { setup: globalSetup });
 
-test('Two copy formulas', 2, function(){
+test('Two parallel copy formulas', 2, function(){
 
 	var $a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'), init_val = 3, test_val_a = 7, test_val_b = 9;
 
@@ -628,6 +628,25 @@ test('Two copy formulas', 2, function(){
 
 	equal( test_val_a, $c.val(), 'the formulas should not interfere.' );
 	equal( test_val_b, $r.val(), 'the formulas should not interfere.' );
+
+});
+
+test('Two serial copy formulas', 2, function(){
+
+	var $a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'), init_val = 3, test_val = 7;
+
+	$a.val(init_val);
+	$b.val(init_val);
+	$c.val(init_val);
+	$r.val(init_val);
+
+	$c.live_formula('#a');
+	$r.live_formula('#c');
+
+	$a.val(test_val).blur();
+
+	equal( test_val, $c.val(), 'the formulas should not interfere.' );
+	equal( test_val, $r.val(), 'the formulas should follow-on.' );
 
 });
 
