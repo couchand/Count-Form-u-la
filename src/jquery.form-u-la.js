@@ -11,12 +11,10 @@ var util = {
 	  function( input ){
 		var i = {}, $i = $(''), s = [], j, q;
 		if ( 'number' === typeof input ){
-			//return [[input], $i];
 			i = input;
 		}
 		else if ( 'string' === typeof input ){
 			var $v = $(input);
-			//return [[$v], $v];
 			i = $v;
 			$i = $v;
 			s.push(input);
@@ -40,10 +38,6 @@ var util = {
 
 			});
 		}
-/*		else if ( 'undefined' !== input.jquery ){
-			i[0] = input;
-			$i = input;
-		}*/
 		return [i, $i, s];
 	},
 
@@ -58,7 +52,7 @@ var util = {
 		}
 
 		arr = s.split('.');
-//console.debug(arr);
+
 		if ( arr[1] ){
 			places = arr[1].split('').length;
 		}
@@ -75,8 +69,6 @@ var util = {
 	setPrecision:
 	  function( numberInput, precision ){
 		var str = '' + numberInput, digits = 0, falsePrecision, decimalShift, places, numVal = numberInput;
-//		str = str.replace( new RegExp('^(-?\\d{' + precision + '})(\\d*)$'), '$1X__FORM-U-LA__X$2' );
-//		new_str = str.split( 'X__FORM-U-LA__X' );
 
 		digits = str.replace( /\.\d*$/, '' ).replace( /^-/, '' ).split('').length;
 		falsePrecision = digits - precision;
@@ -185,11 +177,6 @@ if ( options_in ){
 	if ( $.isFunction( formula_in ) ){
 		formula = formula_in;
 	}
-/*	else if ( 'string' === typeof formula_in ){
-		formula = function( new_inputs ){
-			handler.value = eval( formula_replace( formula_in, new_inputs ) );
-		};
-	}*/
 	else {
 		formula = util.copy;
 	}
@@ -239,12 +226,8 @@ handler = function(){
 
 	input_count = util.count(inputs);
 
-//console.log( '' + input_count + ' inputs:' );
-//console.log( inputs );
-
 	if ( !!inputs.jquery && 1 == inputs.size() ){
 		x = parseFloat( inputs.val() );
-//console.log(inputs.val());
 		p = util.getPrecision( inputs.val() );
 		inputs.data( 'form-u-la.precision', p );
 		precision = precision_func( precision, p );
@@ -334,11 +317,6 @@ handler = function(){
 	}
 
 	value = formula( locals );
-//if ( 'number' !== typeof value ){
-//console.log(value);
-//}
-//	value = value.toFixed(precision);
-//console.log(value);
 
 	if ( 'ignore' !== options.precision ){
 		value = util.setPrecision( value, precision );
