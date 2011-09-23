@@ -96,7 +96,7 @@ var util = {
 	// Aggregate functions.
 	min:
 	  function( input ){
-		if ( Object !== input.constructor ){
+		if ( !$.isPlainObject(input) ){
 			return input;
 		}
 		var min = 4294967295;
@@ -109,7 +109,7 @@ var util = {
 	},
 	max:
 	  function( input ){
-		if ( Object !== input.constructor ){
+		if ( !$.isPlainObject(input) ){
 			return input;
 		}
 		var max = -4294967295;
@@ -122,7 +122,7 @@ var util = {
 	},
 	sum:
 	  function( input ){
-		if ( Object !== input.constructor ){
+		if ( !$.isPlainObject(input) ){
 			return ('undefined' === typeof input) ? 0 : input;
 		}
 		var sum = 0;
@@ -133,7 +133,7 @@ var util = {
 	},
 	count:
 	  function( input ){
-		if ( Object !== input.constructor ){
+		if ( !$.isPlainObject(input) ){
 			return ('undefined' === typeof input) ? 0 : 1;
 		}
 		var count = 0;
@@ -144,7 +144,7 @@ var util = {
 	},
 	avg:
 	  function( input ){
-		if ( Object !== input.constructor ){
+		if ( !$.isPlainObject(input) ){
 			return input;
 		}
 		var sum = 0, count = 0;
@@ -384,11 +384,11 @@ $.each( selectors, function(k, v){
 });
 
 // bind all resolved current inputs
-$inputs.bind(options.bind+'.form-u-la', calculate);
+$inputs.bind(options.bind+'.form-u-la', handler);
 
 // live all selectors in the input
 $.each( selectors, function(k, v){
-	$(v).live(options.bind+'.form-u-la', calculate);
+	$(v).live(options.bind+'.form-u-la', handler);
 });
 
 	};
