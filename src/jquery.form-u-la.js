@@ -372,15 +372,15 @@ if ( options.taintable ){
 	$outputs.bind('change', function(){ $(this).data('form-u-la.tainted',true); });
 }
 else {
-	$outputs.attr('disabled','disabled');
+	$outputs.attr('disabled', 'disabled');
 }
 
 // bind all resolved current inputs
-$inputs.bind('calculate.form-u-la',handler);
+$inputs.bind('calculate.form-u-la', handler);
 
 // live all selectors in the input
 $.each( selectors, function(k, v){
-	$(v).live('calculate.form-u-la',handler);
+	$(v).live('calculate.form-u-la', handler);
 });
 
 // bind all resolved current inputs
