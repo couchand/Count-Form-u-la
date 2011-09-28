@@ -88,7 +88,7 @@ var util = {
 	// Aggregate functions.
 	min:
 	  function( input ){
-		if ( !$.isPlainObject(input) ){
+		if ( util.min.unary ){
 			return input;
 		}
 		var min = 4294967295;
@@ -101,7 +101,7 @@ var util = {
 	},
 	max:
 	  function( input ){
-		if ( !$.isPlainObject(input) ){
+		if ( util.max.unary ){
 			return input;
 		}
 		var max = -4294967295;
@@ -114,7 +114,7 @@ var util = {
 	},
 	sum:
 	  function( input ){
-		if ( !$.isPlainObject(input) ){
+		if ( util.sum.unary ){
 			return ('undefined' === typeof input) ? 0 : input;
 		}
 		var sum = 0;
@@ -125,7 +125,7 @@ var util = {
 	},
 	count:
 	  function( input ){
-		if ( !$.isPlainObject(input) ){
+		if ( util.count.unary ){
 			return ('undefined' === typeof input) ? 0 : 1;
 		}
 		var count = 0;
@@ -136,7 +136,7 @@ var util = {
 	},
 	avg:
 	  function( input ){
-		if ( !$.isPlainObject(input) ){
+		if ( util.count.unary ){
 			return input;
 		}
 		var sum = 0, count = 0;
@@ -170,16 +170,18 @@ var $outputs = this,
 	//	beforeCalc: null,
 	//	afterCalc: null };
 
+
+if ( $.isFunction( formula_in ) ){
+	formula = formula_in;
+}
+else {
+	formula = util.copy;
+	options_in = formula_in;
+}
+
 if ( options_in ){
 	$.extend(options, options_in);
 }
-
-	if ( $.isFunction( formula_in ) ){
-		formula = formula_in;
-	}
-	else {
-		formula = util.copy;
-	}
 
 handler = function(){
 
@@ -315,6 +317,8 @@ handler = function(){
 			}
 		});
 	}
+
+	formula.unary = !( $.isPlainObject( locals ) );
 
 	value = formula( locals );
 
