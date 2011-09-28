@@ -153,34 +153,28 @@ var util = {
 };
 
 (function($){
-	$.fn.live_formula = function( inputs_in, formula_in, options_in ){
 
-var $outputs = this,
-    inputs, $inputs,
-    selectors,
-    handler,
-    calculate = function(){ $(this).trigger('calculate.form-u-la'); },
-    thisIndex,
-    formula,
-    temp,
-    options = {	bind: 'blur',
-		taintable: false,
-		precision: 'ignore' };
-	//	format: 'number',
-	//	beforeCalc: null,
-	//	afterCalc: null };
+	$.widget( 'ui.live_formula', {
+
+		_create: function(){
+
+var	self		= this,
+	$outputs	= this.element,
+	inputs_in	= self.options.inputs,
+	inputs, $inputs,
+	selectors, handler,
+	thisIndex, formula, temp;
 
 
-if ( $.isFunction( formula_in ) ){
-	formula = formula_in;
+if ( $.isFunction( self.options.formula ) ){
+	formula = self.options.formula;
 }
 else {
 	formula = util.copy;
-	options_in = formula_in;
 }
 
-if ( options_in ){
-	$.extend(options, options_in);
+if ( 'undefined' === typeof inputs_in ){
+	return;
 }
 
 handler = function(){
@@ -373,5 +367,14 @@ $.each( selectors, function(k, v){
 	$(v).live(options.bind+'.form-u-la', handler);
 });
 
-	};
+		}
+	});
+
+	$.ui.live_formula.prototype.options = {	bind: 'blur',
+						taintable: false,
+						precision: 'ignore' };
+					//	format: 'number',
+					//	beforeCalc: null,
+					//	afterCalc: null };
+
 })(jQuery);
