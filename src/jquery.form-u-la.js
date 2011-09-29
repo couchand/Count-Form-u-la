@@ -7,31 +7,6 @@
  *
  */
 var util = {
-	getPrecision:
-	  function( stringInput, mode ){
-
-		var	s = stringInput.replace( /^-?(\d+\.?\d*)$/, '$1' ),
-			arr, k, digits = 0, places = 0;
-
-		if ( $.isNaN( parseFloat(s) ) ){
-			return null;
-		}
-
-		arr = s.split('.');
-
-		if ( arr[1] ){
-			places = arr[1].split('').length;
-		}
-		else if ( ( -1 === s.indexOf('.') ) && ( 'assumeZeros' !== mode ) ) {
-			arr[0] = arr[0].replace( /0+$/, '' );
-		}
-
-		digits = arr[0].split('').length;
-
-		return ( 'decimalPlaces' === mode ) ? places : digits + places;
-
-	},
-
 	setPrecision:
 	  function( numberInput, precision ){
 		var str = '' + numberInput, digits = 0, falsePrecision, decimalShift, places, numVal = numberInput;
@@ -150,6 +125,31 @@ var util = {
 	};
 
 	$.widget( 'uix.formula', {
+
+		_getPrecision:
+		  function( stringInput ){
+
+			var	s = stringInput.replace( /^-?(\d+\.?\d*)$/, '$1' ),
+				arr, k, digits = 0, places = 0;
+
+			if ( $.isNaN( parseFloat(s) ) ){
+				return null;
+			}
+
+			arr = s.split('.');
+
+			if ( arr[1] ){
+				places = arr[1].split('').length;
+			}
+			else if ( ( -1 === s.indexOf('.') ) && ( 'assumeZeros' !== this.options.precisionMode ) ) {
+				arr[0] = arr[0].replace( /0+$/, '' );
+			}
+
+			digits = arr[0].split('').length;
+
+			return ( 'decimalPlaces' === this.options.precisionMode ) ? places : digits + places;
+
+		},
 
 		_resolve_input:
 		  function( input ){

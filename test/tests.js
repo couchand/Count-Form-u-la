@@ -192,66 +192,183 @@ test("Resolve inputs - object of selectors", 10, function(){
 
 });
 
-
 module('getPrecision - default behavior', { setup: globalSetup });
 
 test('empty string', 1, function(){
-	equal( null, util.getPrecision(''), 'the error code is null' );
+	var	actual, widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision('');
+	// Stop Test
+
+	equal( null, actual, 'the error code is null' );
 });
 test('text input', 1, function(){
-	equal( null, util.getPrecision('foobar'), 'the error code is null' );
+	var	actual, test_string = 'foobar',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( null, actual, 'the error code is null' );
 });
 test('integer', 1, function(){
-	equal( 1, util.getPrecision('2'), 'the precision should be the number of significant figures' );
+	var	actual, test_string = '2',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 1, actual, 'the precision should be the number of significant figures' );
 });
 test('simple float', 1, function(){
-	equal( 2, util.getPrecision('2.5'), 'the precision should be the number of significant figures' );
+	var	actual, test_string = '2.5',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 2, actual, 'the precision should be the number of significant figures' );
 });
 test('negative float', 1, function(){
-	equal( 2, util.getPrecision('-2.5'), 'the precision should be the number of significant figures' );
+	var	actual, test_string = '-2.5',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 2, actual, 'the precision should be the number of significant figures' );
 });
 test('trailing zeros after decimal point', 1, function(){
-	equal( 4, util.getPrecision('800.0'), 'zeros after the decimal point should always count'); 
+	var	actual, test_string = '800.0',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 4, actual, 'zeros after the decimal point should always count'); 
 });
 test('trailing zeros no decimal point', 1, function(){
-	equal( 1, util.getPrecision('800'), 'zeros without a decimal point should not count' );
+	var	actual, test_string = '800',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 1, actual, 'zeros without a decimal point should not count' );
 });
 test('trailing zeros with decimal point', 1, function(){
-	equal( 3, util.getPrecision('800.'), 'zeros before the decimal point should count'); 
+	var	actual, test_string = '800.',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 3, actual, 'zeros before the decimal point should count'); 
 });
 
 
 module('getPrecision - assume zeros are significant', { setup: globalSetup });
 
 test('trailing zeros after decimal point', 1, function(){
-	equal( 4, util.getPrecision('800.0', 'assumeZeros'), 'zeros after the decimal point should always count'); 
+	var	actual, test_string = '800.0',
+		widget = $('#r').formula({ precisionMode: 'assumeZeros' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 4, actual, 'zeros after the decimal point should always count'); 
 });
 test('trailing zeros no decimal point', 1, function(){
-	equal( 3, util.getPrecision('800', 'assumeZeros'), 'zeros without a decimal point should count' );
+	var	actual, test_string = '800',
+		widget = $('#r').formula({ precisionMode: 'assumeZeros' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 3, actual, 'zeros without a decimal point should count when set' );
 });
 test('trailing zeros with decimal point', 1, function(){
-	equal( 3, util.getPrecision('800.'), 'zeros before the decimal point should count'); 
+	var	actual, test_string = '800.',
+		widget = $('#r').formula({ precisionMode: 'assumeZeros' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 3, actual, 'zeros before the decimal point should count'); 
 });
 
 module('getPrecision - only count decimal places', { setup: globalSetup });
 
 test('integer', 1, function(){
-	equal( 0, util.getPrecision('2', 'decimalPlaces'), 'the precision should be the number of decimal places' );
+	var	actual, test_string = '2',
+		widget = $('#r').formula({ precisionMode: 'decimalPlaces' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 0, actual, 'the precision should be the number of decimal places' );
 });
 test('simple float', 1, function(){
-	equal( 1, util.getPrecision('2.5', 'decimalPlaces'), 'the precision should be the number of decimal places' );
+	var	actual, test_string = '2.5',
+		widget = $('#r').formula({ precisionMode: 'decimalPlaces' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 1, actual, 'the precision should be the number of decimal places' );
 });
 test('negative float', 1, function(){
-	equal( 1, util.getPrecision('-2.5', 'decimalPlaces'), 'the precision should be the number of decimal places' );
+	var	actual, test_string = '-2.5',
+		widget = $('#r').formula({ precisionMode: 'decimalPlaces' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 1, actual, 'the precision should be the number of decimal places' );
 });
 test('trailing zeros after decimal point', 1, function(){
-	equal( 1, util.getPrecision('800.0', 'decimalPlaces'), 'zeros after the decimal point should always count'); 
+	var	actual, test_string = '800.0',
+		widget = $('#r').formula({ precisionMode: 'decimalPlaces' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 1, actual, 'zeros after the decimal point should always count'); 
 });
 test('trailing zeros no decimal point', 1, function(){
-	equal( 0, util.getPrecision('800', 'decimalPlaces'), 'zeros without a decimal point should not count' );
+	var	actual, test_string = '800',
+		widget = $('#r').formula({ precisionMode: 'decimalPlaces' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 0, actual, 'zeros without a decimal point should not count' );
 });
 test('trailing zeros with decimal point', 1, function(){
-	equal( 0, util.getPrecision('800.', 'decimalPlaces'), 'zeros before the decimal point should not count'); 
+	var	actual, test_string = '800.',
+		widget = $('#r').formula({ precisionMode: 'decimalPlaces' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 0, actual, 'zeros before the decimal point should not count'); 
 });
 
 
