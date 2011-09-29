@@ -7,40 +7,6 @@
  *
  */
 var util = {
-	resolve_input:
-	  function( input ){
-		var i = {}, $i = $(''), s = [], j, q;
-		if ( 'number' === typeof input ){
-			i = input;
-		}
-		else if ( 'string' === typeof input ){
-			var $v = $(input);
-			i = $v;
-			$i = $v;
-			s.push(input);
-		}
-		else if ( $.isPlainObject( input ) ){
-			$.each( input, function( k, v ){
-				var r, $n, t;
-				t = util.resolve_input(v);
-				r = t[0]; $n = t[1]; q = t[2];
-
-				i[k] = r;
-				$i.add($n);
-
-				for ( j = 0; j < q.length; j++ ){
-					s.push(q[j]);
-				}
-
-				if ( !!r.jquery ){
-					$i = $i.add(r);
-				}
-
-			});
-		}
-		return [i, $i, s];
-	},
-
 	getPrecision:
 	  function( stringInput, mode ){
 
@@ -145,16 +111,55 @@ var util = {
 			count = count + 1
 		});
 		return (sum/count);
-	},
-	copy:
-	  function(i){
-		return i;
 	}
 };
 
 (function($){
 
-	$.widget( 'ui.live_formula', {
+	function resolve_input( input ){
+		var i = {}, $i = $(''), s = [], j, q;
+		if ( 'number' === typeof input ){
+			i = input;
+		}
+		else if ( 'string' === typeof input ){
+			var $v = $(input);
+			i = $v;
+			$i = $v;
+			s.push(input);
+		}
+		else if ( $.isPlainObject( input ) ){
+			$.each( input, function( k, v ){
+				var r, $n, t;
+				t = resolve_input(v);
+				r = t[0]; $n = t[1]; q = t[2];
+
+				i[k] = r;
+				$i.add($n);
+
+				for ( j = 0; j < q.length; j++ ){
+					s.push(q[j]);
+				}
+
+				if ( !!r.jquery ){
+					$i = $i.add(r);
+				}
+
+			});
+		}
+		return [i, $i, s];
+	};
+
+	$.widget( 'uix.formula', {
+
+		_resolve_input:
+		  function( input ){
+			return resolve_input( input );
+		},
+
+		_copy:
+		  function(i){
+			return i;
+		},
 
 		_create: function(){
 
@@ -370,7 +375,7 @@ $.each( selectors, function(k, v){
 		}
 	});
 
-	$.ui.live_formula.prototype.options = {	bind: 'blur',
+	$.uix.formula.prototype.options = {	bind: 'blur',
 						taintable: false,
 						precision: 'ignore' };
 					//	format: 'number',

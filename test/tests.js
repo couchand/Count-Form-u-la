@@ -42,103 +42,153 @@ test('require the number of expected assertions -- not expected to even show up 
 });
 */
 
-test("Plugin hook created", 2, function(){
-	var hook = $('<p></p>').live_formula;
-	ok( hook, "The plugin hook exists" );
-	ok( $.isFunction( hook ), "The hook is a function" );
+test('Plugin hook created', 2, function(){
+	var hook = $('<p></p>').formula;
+	ok( hook,			'The plugin hook exists' );
+	ok( $.isFunction( hook ),	'The hook is a function' );
 });
 
-module("Util", { setup: globalSetup });
+module('Util', { setup: globalSetup });
 
-test("Resolve inputs - number", 2, function(){
-	var num = 5, i, $i, t;
+test('copy', 1, function(){
+	var	expected = 5, actual,
+		$field = $('#a'), widget;
 
-	t = util.resolve_input(num);
-	i = t[0]; $i = t[1];
+	$field.formula();
+	widget = $field.data('formula');
 
-	equal( 0, $i.length, "no jQuery elements should be returned" );
+	// Start Test
+	actual = widget._copy( expected );
+	// Stop Test
 
-	equal( num, i, "resoving a number should yield the number itself" );
+	equal( expected, actual, 'The value should be copied.' );
+
 });
 
-test("Resolve inputs - single selector", 6, function(){
-	var sel = ".out", i, $i, t;
+test('Resolve inputs - number', 2, function(){
+	var	expected = 5, actual, $jQueryObject, temp,
+		$field = $('#a'), widget;
 
-	t = util.resolve_input(sel);
-	i = t[0]; $i = t[1];
+	$field.formula();
+	widget = $field.data('formula');
 
-	equal( 1, $i.length, "one jQuery element should be returned" );
+	// Start Test
+	temp = widget._resolve_input( expected );
 
-	ok( 'undefined' !== typeof $i.jquery, 'resolving a selector should yield a jQuery element' );
-	ok( $i.is('input[type="text"]'), 'the right element should be found' );
-	ok( $i.hasClass('number'), 'the right element should be found' );
+	actual = temp[0]; $jQueryObject = temp[1];
+	// Stop Test
 
-	equal( 'r', $i.attr('id'), 'the proper element should be found' );
-	equal( 'r', i.attr('id'), 'the proper element should be found' );
+	equal( 0, $jQueryObject.length, 'no jQuery elements should be returned' );
+
+	equal( expected, actual,	'resoving a num should yield the number itself' );
 });
 
-test("Resolve inputs - multiple selector", 11, function(){
-	var sel = ".in", i, $i, t;
+test('Resolve inputs - single selector', 6, function(){
+	var	selector = '.out', actual, $jQueryObject, temp,
+		$field = $('#a'), widget;
 
-	t = util.resolve_input(sel);
-	i = t[0]; $i = t[1];
+	$field.formula();
+	widget = $field.data('formula');
 
-	ok( 'undefined' !== typeof $i.jquery, 'resolving a selector should yield a jQuery element' );
+	// Start Test
+	temp = widget._resolve_input(selector);
+	actual = temp[0]; $jQueryObject = temp[1];
+	// Stop Test
 
-	equal( 3, $i.size(), "three jQuery elements should be returned" );
+	equal( 1, $jQueryObject.length, 'one jQuery element should be returned' );
 
-	$i.each(function(){
+	ok( 'undefined' !== typeof $jQueryObject.jquery,	'resolving a selector should yield a jQuery element'	);
+	ok( $jQueryObject.is('input[type="text"]'),		'the right element should be found'			);
+	ok( $jQueryObject.hasClass('number'),			'the right element should be found'			);
+
+	equal( 'r', $jQueryObject.attr('id'),			'the proper element should be found'			);
+	equal( 'r', actual.attr('id'),				'the proper element should be found'			);
+});
+
+test('Resolve inputs - multiple selector', 11, function(){
+	var	selector = '.in', actual, $jQueryObject, temp,
+		$field = $('#r'), widget;
+
+	$field.formula();
+	widget = $field.data('formula');
+
+	// Start Test
+	temp = widget._resolve_input(selector);
+	actual = temp[0]; $jQueryObject = temp[1];
+	// Stop Test
+
+	ok( 'undefined' !== typeof $jQueryObject.jquery, 'resolving a selector should yield a jQuery element' );
+
+	equal( 3, $jQueryObject.size(), 'three jQuery elements should be returned' );
+
+	$jQueryObject.each(function(){
 
 		var $e = $(this);
 
-		ok( $e.is('input[type="text"]'), 'the right element should be found' );
-		ok( $e.hasClass('number'), 'the proper element should be found' );
-		ok( $e.hasClass('i'), 'the proper element should be found' );
+		ok( $e.is('input[type="text"]'),	'the right element should be found'	);
+		ok( $e.hasClass('number'),		'the proper element should be found'	);
+		ok( $e.hasClass('i'),			'the proper element should be found'	);
 
 	});
 });
 
-test("Resolve inputs - object of numbers", 4, function(){
+test('Resolve inputs - object of numbers', 4, function(){
 
-	var x_val = 7, y_val = 9, i, $i, t;
+	var	expected_x = 7, expected_y = 9, actual, $jQueryObject, temp,
+		$field = $('#r'), widget;
 
-	t = util.resolve_input({ x: x_val, y: y_val });
-	i = t[0]; $i = t[1];
+	$field.formula();
+	widget = $field.data('formula');
 
-	ok( 'undefined' !== typeof $i.jquery, 'resolving a no selectors should yield an empty jQuery element' );
+	// Start Test
+	temp = widget._resolve_input({ x: expected_x, y: expected_y });
+	actual = temp[0]; $jQueryObject = temp[1];
+	// Stop Test
 
-	equal( 0, $i.size(), "no jQuery elements should be returned" );
+	ok( 'undefined' !== typeof $jQueryObject.jquery,	'resolving a no selectors should yield an empty jQuery element'	);
 
-	equal( x_val, i.x, 'the input object values should be returned' );
-	equal( y_val, i.y, 'the input object values should be returned' );
+	equal( 0, $jQueryObject.size(),				'no jQuery elements should be returned'				);
+
+	equal( expected_x, actual.x,				'the input object values should be returned'			);
+	equal( expected_y, actual.y,				'the input object values should be returned'			);
 
 });
 
 test("Resolve inputs - object of selectors", 10, function(){
 
-	var test_val = 7, a_sel = '#a', r_sel = '#r', i, $i, k, $el, t;
+	var expected = 7, selector_a = '#a', selector_r = '#r', actual, $jQueryObject, key, $input, temp,
+		$field = $('#b'), widget;
 
-	$(a_sel).val(test_val);
-	$(r_sel).val(test_val);
+	$field.formula();
+	widget = $field.data('formula');
 
-	t = util.resolve_input({ a: a_sel, r: r_sel });
-	i = t[0]; $i = t[1];
+	$( selector_a ).val(expected);
+	$( selector_r ).val(expected);
 
-	equal( 2, $i.size(), 'all selectors in the object should be added to the returned jquery wrapper' );
+	// Start Test
+	temp = widget._resolve_input({ a: selector_a, r: selector_r });
+	actual = temp[0]; $jQueryObject = temp[1];
+	// Stop Test
 
-	for( k in i ){
-		$el = i[k];
+	equal( 2, $jQueryObject.size(), 'all selectors in the object should be added to the returned jquery wrapper' );
 
-		equal( test_val, $el.val(), 'Each selector in the object should be resolved to a jQuery object' );
+	for( key in actual ){
+		$input = actual[key];
 
-		ok( $el.is('input[type="text"]'), 'the right element should be found' );
-		ok( $el.hasClass('number'), 'the right element should be found' );
+		equal( expected, $input.val(), 'Each selector in the object should be resolved to a jQuery object' );
+
+		ok( $input.is('input[type="text"]'), 'the right element should be found' );
+		ok( $input.hasClass('number'), 'the right element should be found' );
 	}
 
-	ok( i.a.hasClass('in'), 'the right element should be found' );
-	ok( i.r.hasClass('out'), 'the right element should be found' );
-	ok( ($i.first().hasClass('in') && $i.last().hasClass('out')) || (i.first().hasClass('out') && $i.last().hasClass('in')),
-		'the right elements should be found' );
+	ok( actual.a.hasClass('in'), 'the right element should be found' );
+	ok( actual.r.hasClass('out'), 'the right element should be found' );
+	ok(
+		(	$jQueryObject.first().hasClass('in') && $jQueryObject.last().hasClass('out')	)
+			||
+		(	$jQueryObject.first().hasClass('out') && $jQueryObject.last().hasClass('in')		),
+		'the right elements should be found'
+	  );
 
 });
 
@@ -254,16 +304,16 @@ test("one in one out", 2, function(){
 
 test("one in many out", 3, function(){
 
-	var $i = $('.in'), $o = $('#r'), init_val = 3, test_val = 7;
+	var $jQueryObject = $('.in'), $o = $('#r'), init_val = 3, test_val = 7;
 
-	$i.val(init_val);
+	$jQueryObject.val(init_val);
 	$o.val(init_val);
 
-	$i.live_formula('#r');
+	$jQueryObject.live_formula('#r');
 
 	$o.val(test_val).blur();
 
-	$i.each(function(){
+	$jQueryObject.each(function(){
 		equal( test_val, $(this).val(), 'the test string should be transferred' );
 	});
 
@@ -545,12 +595,12 @@ test('set precision on single selector', 2, function(){
 
 test('set precision on multiple selector', 4, function(){
 
-	var in_sel = '.in', $inputs = $(in_sel), $r = $('#r');
+	var in_sel = '.in', $jQueryObjectnputs = $(in_sel), $r = $('#r');
 
 	$r.live_formula(in_sel, util.sum, { precision: 'lowest' });
-	$inputs.val( 2.5 ).first().blur();
+	$jQueryObjectnputs.val( 2.5 ).first().blur();
 
-	$inputs.each(function(){
+	$jQueryObjectnputs.each(function(){
 		equal( 2, $(this).data( 'form-u-la.precision' ), 'the precision should be set in each input element data' );
 	});
 	equal( 2, $r.data( 'form-u-la.precision' ), 'the precision should be set in the output element data' );
@@ -562,13 +612,13 @@ test('set precision on object of inputs', 4, function(){
 	var	a_sel = '#a', $a = $(a_sel),
 		b_sel = '#b', $b = $(b_sel),
 		c_sel = '#c', $c = $(c_sel),
-		$inputs = $('.in'),
+		$jQueryObjectnputs = $('.in'),
 		$r = $('#r');
 
 	$r.live_formula({ a: a_sel, b: b_sel, c: c_sel }, util.sum, { precision: 'lowest' });
-	$inputs.val( 2.5 ).first().blur();
+	$jQueryObjectnputs.val( 2.5 ).first().blur();
 
-	$inputs.each(function(){
+	$jQueryObjectnputs.each(function(){
 		equal( 2, $(this).data( 'form-u-la.precision' ), 'the precision should be set in each input element data' );
 	});
 	equal( 2, $r.data( 'form-u-la.precision' ), 'the precision should be set in the output element data' );
