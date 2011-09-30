@@ -823,8 +823,14 @@ test('set precision on single selector', 2, function(){
 
 	var a_sel = '#a', $a = $(a_sel), $r = $('#r');
 
-	$r.live_formula(a_sel, $.formula.copy, { precision: 'lowest' });
+	// Start Test
+	$r.formula({
+		input: a_sel,
+		formula: $.formula.copy,
+		precision: 'lowest'
+	});
 	$a.val( 2.5 ).blur();
+	// Stop Test
 
 	equal( 2, $a.data( 'form-u-la.precision' ), 'the precision should be set in the input element data' );
 	equal( 2, $r.data( 'form-u-la.precision' ), 'the precision should be set in the output element data' );
@@ -833,12 +839,18 @@ test('set precision on single selector', 2, function(){
 
 test('set precision on multiple selector', 4, function(){
 
-	var in_sel = '.in', $jQueryObjectnputs = $(in_sel), $r = $('#r');
+	var in_sel = '.in', $inputs = $(in_sel), $r = $('#r');
 
-	$r.live_formula(in_sel, $.formula.sum, { precision: 'lowest' });
-	$jQueryObjectnputs.val( 2.5 ).first().blur();
+	// Start Test
+	$r.formula({
+		input: in_sel,
+		formula: $.formula.sum,
+		precision: 'lowest'
+	});
+	$inputs.val( 2.5 ).first().blur();
+	// Stop Test
 
-	$jQueryObjectnputs.each(function(){
+	$inputs.each(function(){
 		equal( 2, $(this).data( 'form-u-la.precision' ), 'the precision should be set in each input element data' );
 	});
 	equal( 2, $r.data( 'form-u-la.precision' ), 'the precision should be set in the output element data' );
@@ -850,13 +862,23 @@ test('set precision on object of inputs', 4, function(){
 	var	a_sel = '#a', $a = $(a_sel),
 		b_sel = '#b', $b = $(b_sel),
 		c_sel = '#c', $c = $(c_sel),
-		$jQueryObjectnputs = $('.in'),
+		$inputs = $('.in'),
 		$r = $('#r');
 
-	$r.live_formula({ a: a_sel, b: b_sel, c: c_sel }, $.formula.sum, { precision: 'lowest' });
-	$jQueryObjectnputs.val( 2.5 ).first().blur();
+	// Start Test
+	$r.formula({
+		inputs: {
+			a: a_sel,
+			b: b_sel,
+			c: c_sel
+		},
+		formula: $.formula.sum,
+		precision: 'lowest'
+	});
+	$inputs.val( 2.5 ).first().blur();
+	// Stop Test
 
-	$jQueryObjectnputs.each(function(){
+	$inputs.each(function(){
 		equal( 2, $(this).data( 'form-u-la.precision' ), 'the precision should be set in each input element data' );
 	});
 	equal( 2, $r.data( 'form-u-la.precision' ), 'the precision should be set in the output element data' );
