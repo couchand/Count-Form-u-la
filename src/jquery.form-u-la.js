@@ -7,25 +7,6 @@
  *
  */
 var util = {
-	setPrecision:
-	  function( numberInput, precision ){
-		var str = '' + numberInput, digits = 0, falsePrecision, decimalShift, places, numVal = numberInput;
-
-		digits = str.replace( /\.\d*$/, '' ).replace( /^-/, '' ).split('').length;
-		falsePrecision = digits - precision;
-
-		if ( 0 <= falsePrecision ){
-			decimalShift = Math.pow( 10, falsePrecision );
-			numVal = Math.round( numberInput / decimalShift ) * decimalShift;
-		}
-		else {
-			places = -falsePrecision;
-			numVal = numberInput.toFixed(places);
-		}
-
-		return '' + numVal;
-	},
-
 	// Aggregate functions.
 	min:
 	  function( input ){
@@ -151,6 +132,25 @@ var util = {
 
 		},
 
+		_setPrecision:
+		  function( numberInput, precision ){
+			var str = '' + numberInput, digits = 0, falsePrecision, decimalShift, places, numVal = numberInput;
+
+			digits = str.replace( /\.\d*$/, '' ).replace( /^-/, '' ).split('').length;
+			falsePrecision = digits - precision;
+
+			if ( 0 <= falsePrecision ){
+				decimalShift = Math.pow( 10, falsePrecision );
+				numVal = Math.round( numberInput / decimalShift ) * decimalShift;
+			}
+			else {
+				places = -falsePrecision;
+				numVal = numberInput.toFixed(places);
+			}
+
+			return '' + numVal;
+		},
+
 		_resolve_input:
 		  function( input ){
 			return resolve_input( input );
@@ -165,7 +165,7 @@ var util = {
 
 var	self		= this,
 	$outputs	= this.element,
-	inputs_in	= self.options.inputs,
+	inputs_in	= self.options.input,
 	inputs, $inputs,
 	selectors, handler,
 	thisIndex, formula, temp;
@@ -175,7 +175,7 @@ if ( $.isFunction( self.options.formula ) ){
 	formula = self.options.formula;
 }
 else {
-	formula = util.copy;
+	formula = self._copy;
 }
 
 if ( 'undefined' === typeof inputs_in ){
@@ -197,14 +197,14 @@ handler = function(){
 	}
 
 	precision_func = function(a, b){
-		var pf =	('ignore' === options.precision) ?
+		var pf =	('ignore' === self.options.precision) ?
 					function(a, b){ return Number.NaN; }
-				:('lowest' === options.precision) ?
+				:('lowest' === self.options.precision) ?
 					function(a, b){ return (a < b) ? a : b; }
-				:('highest' === options.precision) ?
+				:('highest' === self.options.precision) ?
 					function(a, b){ return (a > b) ? a : b; }
 				:
-					options.precision;
+					self.options.precision;
 
 		return	('undefined' === typeof a) ? (
 				('undefined' === typeof b) ?
@@ -222,14 +222,14 @@ handler = function(){
 
 
 
-	t = util.resolve_input(inputs_in);
+	t = self._resolve_input(inputs_in);
 	inputs = t[0]; $inputs = t[1]; selectors = t[2];
 
 	input_count = util.count(inputs);
 
 	if ( !!inputs.jquery && 1 == inputs.size() ){
 		x = parseFloat( inputs.val() );
-		p = util.getPrecision( inputs.val() );
+		p = self._getPrecision( inputs.val() );
 		inputs.data( 'form-u-la.precision', p );
 		precision = precision_func( precision, p );
 		if ( !$.isNaN(x) ){
@@ -238,7 +238,7 @@ handler = function(){
 	}
 	else if ( 'number' === typeof inputs ){
 		x = inputs;
-		p = util.getPrecision( '' + x );
+		p = self._getPrecision( '' + x );
 		precision = precision_func( precision, p );
 		if ( !$.isNaN(x) ){
 			locals = x;
@@ -251,7 +251,7 @@ handler = function(){
 			if ( 'number' === typeof v ){
 
 				x = v;
-				p = util.getPrecision( '' + x );
+				p = self._getPrecision( '' + x );
 				precision = precision_func( precision, p );
 				if ( !$.isNaN(x) ){
 					locals[k] = x;
@@ -260,7 +260,7 @@ handler = function(){
 			else if ( !!v.jquery ){
 				if ( 1 == v.size() ){
 					x = parseFloat( v.val() );
-					p = util.getPrecision( v.val() );
+					p = self._getPrecision( v.val() );
 					v.data( 'form-u-la.precision', p );
 					precision = precision_func( precision, p );
 					if ( !$.isNaN(x) ){
@@ -272,7 +272,7 @@ handler = function(){
 						v.each(function(i){
 							var $t = $(this), val = $t.val();
 							x = parseFloat( val );
-							p = util.getPrecision( val );
+							p = self._getPrecision( val );
 							$t.data( 'form-u-la.precision', p );
 							precision = precision_func( precision, p );
 							if ( !$.isNaN(x) ){
@@ -285,7 +285,7 @@ handler = function(){
 						v.each(function(i){
 							var $t = $(this), val = $t.val();
 							x = parseFloat( val );
-							p = util.getPrecision( val );
+							p = self._getPrecision( val );
 							$t.data( 'form-u-la.precision', p );
 							precision = precision_func( precision, p );
 							if ( !$.isNaN(x) ){
@@ -302,7 +302,7 @@ handler = function(){
 					x = parseFloat( $tryWrapping.val() );
 					if ( !$.isNaN(x) ){
 						locals[k] = x;
-						p = util.getPrecision( $tryWrapping.val() );
+						p = self._getPrecision( $tryWrapping.val() );
 						$tryWrapping.data( 'form-u-la.precision', p );
 						precision = precision_func( precision, p );
 					}
@@ -321,8 +321,8 @@ handler = function(){
 
 	value = formula( locals );
 
-	if ( 'ignore' !== options.precision ){
-		value = util.setPrecision( value, precision );
+	if ( 'ignore' !== self.options.precision ){
+		value = self._setPrecision( value, precision );
 	}
 
 	$outputs.each(function(){
@@ -341,14 +341,14 @@ handler = function(){
 
 };
 
-temp = util.resolve_input(inputs_in);
+temp = self._resolve_input(inputs_in);
 inputs = temp[0]; $inputs = temp[1]; selectors = temp[2];
 
 if ( 0 == $inputs.size() && 0 == selectors.length ){
 	throw "No live inputs found.";
 }
 
-if ( options.taintable ){
+if ( self.options.taintable ){
 	//@TODO: figure out if this should be live
 	$outputs.bind('change', function(){ $(this).data('form-u-la.tainted',true); });
 }
@@ -365,11 +365,11 @@ $.each( selectors, function(k, v){
 });
 
 // bind all resolved current inputs
-$inputs.bind(options.bind+'.form-u-la', handler);
+$inputs.bind(self.options.bind+'.form-u-la', handler);
 
 // live all selectors in the input
 $.each( selectors, function(k, v){
-	$(v).live(options.bind+'.form-u-la', handler);
+	$(v).live(self.options.bind+'.form-u-la', handler);
 });
 
 		}

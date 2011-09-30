@@ -373,28 +373,64 @@ test('trailing zeros with decimal point', 1, function(){
 module('setPrecision - default behavior', { setup: globalSetup });
 
 test('integer not cut off', 1, function(){
-	var ival = 8769, sval = '' + ival;
-	equal( sval, util.setPrecision(ival, 4), 'the integer should pass through' );
+	var	test_val = 8769, expected = '' + test_val, precision = 4, actual,
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._setPrecision( test_val, precision );
+	// Stop Test
+
+	equal( expected, actual, 'the integer should pass through' );
 });
 test('integer rounded up', 1, function(){
-	var ival = 8765, sval = '8770';
-	equal( sval, util.setPrecision(ival, 3), 'the number should be rounded to three significant figures' );
+	var	test_val = 8765, expected = '8770', precision = 3, actual,
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._setPrecision( test_val, precision );
+	// Stop Test
+
+	equal( expected, actual, 'the number should be rounded to three significant figures' );
 });
 test('integer rounded down', 1, function(){
-	var ival = 8764, sval = '8760';
-	equal( sval, util.setPrecision(ival, 3), 'the number should be rounded to three significant figures' );
+	var	test_val = 8764, expected = '8760', precision = 3, actual,
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._setPrecision( test_val, precision );
+	// Stop Test
+
+	equal( expected, actual, 'the number should be rounded to three significant figures' );
 });
 test('float not cut off', 1, function(){
-	var ival = 876.9, sval = '' + ival;
-	equal( sval, util.setPrecision(ival, 4), 'the float should pass through' );
+	var	test_val = 876.9, expected = '' + test_val, precision = 4, actual,
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._setPrecision( test_val, precision );
+	// Stop Test
+
+	equal( expected, actual, 'the float should pass through' );
 });
 test('float rounded up', 1, function(){
-	var ival = 876.50, sval = '877';
-	equal( sval, util.setPrecision(ival, 3), 'the number should be rounded to three significant figures' );
+	var	test_val = 876.50, expected = '877', precision = 3, actual,
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._setPrecision( test_val, precision );
+	// Stop Test
+
+	equal( expected, actual, 'the number should be rounded to three significant figures' );
 });
 test('float rounded down', 1, function(){
-	var ival = 876.49, sval = '876';
-	equal( sval, util.setPrecision(ival, 3), 'the number should be rounded to three significant figures' );
+	var	test_val = 876.49, expected = '876', precision = 3, actual,
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._setPrecision( test_val, precision );
+	// Stop Test
+
+	equal( expected, actual, 'the number should be rounded to three significant figures' );
 });
 
 
@@ -407,9 +443,11 @@ test("one in one out", 2, function(){
 	$r.val(init_val);
 	$a.val(init_val);
 
-	$r.live_formula('#a');
+	// Start Test
+	$r.formula({ input: '#a'});
 
 	$a.val(test_val).blur();
+	// Stop Test
 
 	equal( test_val, $r.val(), 'the test string should be transferred' );
 
@@ -424,7 +462,7 @@ test("one in many out", 3, function(){
 	$jQueryObject.val(init_val);
 	$o.val(init_val);
 
-	$jQueryObject.live_formula('#r');
+	$jQueryObject.formula({ input: '#r'});
 
 	$o.val(test_val).blur();
 
@@ -444,7 +482,7 @@ test('empty values', 2, function(){
 
 	$r.val(init_val);
 
-	$r.live_formula('.in',util.sum);
+	$r.formula({ input: '.in', formula: util.sum });
 
 	$a.val('').blur();
 
