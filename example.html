@@ -5,48 +5,76 @@
 	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
 	<script type="text/javascript" src="http://code.jquery.com/ui/1.8.16/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="src/jquery.form-u-la.js"></script>
+	<style>
+		body {
+			padding: 0 10%;
+		}
+		code pre {
+			padding: 0 10%;
+		}
+	</style>
 </head>
 <body>
 	<h4>Count Form-u-la jQuery Plugin</h4>
 
 	<ol>
-		<li><a href="#usage">Usage</a></li>
+		<li>
+			<a href="#usage">Usage</a>
+			<ol>
+				<li><a href="#output">Output</a></li>
+				<li><a href="#input">Input</a></li>
+				<li><a href="#formula">Formula</a></li>
+			</ol>
+		</li>
+		<li>
+			<a href="#options">Options</a>
+			<ol>
+				<li><a href="#bind">Bind</a></li>
+				<li><a href="#taintable">Taintable</a></li>
+				<li><a href="#precision">Precision</a></li>
+			</ol>
+		</li>
 		<li><a href="#examples">Examples</a></li>
 	</ol>
 
 	<h1><a name="usage">Usage</a></h1>
 
 	<code>
-		$someFormField.live_formula( inputs, [function], [options] );
+		$someFormField.formula({ input: input, [formula: function], [options] });
 	</code>
-	<h3>Output</h3>
+	<h3><a name="output">Output</a></h3>
 	<p>
-		The object the function is called on receives the output of the function on the inputs as a call to val().  (TODO: Add support for text()).
+		The object the widget lives on receives the output of the formula function. The value of each of the inputs are passed in to this formula.  The output is sent by way of a call to val().  (@TODO: add support for text())
 	</p>
-	<h3>Inputs</h3>
+	<h3><a name="input">Input</a></h3>
 	<p>
-		Inputs can be passed in a variety of ways:
+		Input can be passed in a variety of ways.  Of them, passing as a selector will be the most efficient as well as live.  Currently supported input types are:
 	</p>
 	<ul>
-		<li>jQuery selector, e.g. <code>$o.live_formula('.subtotals');</code></li>
-		<li>jQuery object, e.g. <code>$o.live_formula( $subtotals );</code></li>
-		<li>JavaScript literal, e.g. <code>$o.live_formula( 5 );</code></li>
+		<li>jQuery selector, e.g. <code>$o.formula({ input: '.subtotals' });</code></li>
+		<li>jQuery object, e.g. <code>$o.formula({ input: $subtotals });</code></li>
+		<li>JavaScript literal, e.g. <code>$o.formula({ input: 5 });</code></li>
 		<li>Object with named parameters, each of which can be any of the above.
 			<code><pre>
-$o.live_formula({
-	subtotal: '#subtotal',
-	tax:	  '#tax',
-	surcharge: 5
+$o.formula({
+	input: {
+		subtotal: '#subtotal',
+		tax:	  '#tax',
+		surcharge: 5
+	}
 }, util.sum);
 </pre>			</code>
 		</li>
 	</ul>
-	<h3>Function</h3>
 	<p>
-		The second parameter is the function to perform on the inputs.  This must be a unary function.  If there is only a single parameter to the function (after re-resolving all selectors at compute-time), this function is populated with that value.
+		The value of each jQuery type of input is retrieved with a call to val().  (@TODO: add support for text())
+	<p>
+	<h3><a name="formula">Formula</a></h3>
+	<p>
+		The second parameter is the formula to perform on the input.  It is passed as an ordinary JavaScript function, and it must be unary (though the formula itself need not be).  If there is only a single parameter to the formula (after re-resolving all selectors at compute-time), this function is called with that value.
 	</p>
 	<p>
-		In any other case, the input will be an object with named parameters according to the following rules:
+		In any other case, the input will be passed as an object, with named parameters indicating each input according to the following rules:
 	</p>
 	<ul>
 		<li>If the inputs were passed in as an object, they will be passed to the function as an object, with the value of each input placed at it's named index.</li>
@@ -54,20 +82,23 @@ $o.live_formula({
 		<li>jQuery selectors that resolve to multiple inputs are passed as an object of values with numeric keys.</li>
 	</ul>
 	<p>
-		Before invoking the function, Count Form-u-la will set a property called unary so that the function can determine what to do with the input.  For example, the following code transfers the value of the first form field with the 'line_items' class to jQuery object $o, irrespective of whether there is only on or more than one on the page.  Note that the function need not handle the nullary case; this is a user-oriented plugin, so the values are only recalculated when an input changes.
+		Before invoking the callback function, Count Form-u-la will set a property called <code>unary</code> so that the function can determine whether it is being called in a unary context.  For example, the following code transfers the value of the first form field with the <code>line_items</code> class to jQuery object <code>$o</code>, irrespective of whether there is only one, or more than one on the page.  (note that the function need not handle the nullary case; this is a user-oriented plugin, so the values are only recalculated when an input changes)
 	</p>
 	<code><pre>
-function findValue(inputs){
+function findValue(input){
 	if( findValue.unary ){
-		return inputs;
+		return input;
 	}
 	else {
-		return inputs[0];
+		return input[0];
 	}
 }
 
-$o.live_formula('.line_items', findValue);
+$o.formula({ input: '.line_items', formula: findValue });
 </pre>	</code>
+	<p>
+		After re-reading this description, it sounds like this behavior should be changed so that Count Form-u-la consumers can blindly apply <code>jQuery.each</code>. (@TODO)
+	</p>
 
 	<p>
 		As seen in the above example, the function must simply return the value, and Count Form-u-la takes care of the rest.  Because everything is by value in the function, specifying complex equations becomes very simple.
@@ -76,39 +107,50 @@ $o.live_formula('.line_items', findValue);
 function quadratic(i){
 	return (-i.b + Math.sqrt( i.b * i.b - 4 * i.a * i.c ))/(2 * i.a)
 }
-$x.live_formula({
-	a: '#x_2_coefficient',
-	b: '#x_coefficient',
-	c: '#constant'
-},quadratic);
+$x.formula({
+	input: {
+		a: '#x_2_coefficient',
+		b: '#x_coefficient',
+		c: '#constant'
+	},
+	function: quadratic
+});
 </pre>	</code>
 
 	<p>Presumably the HTML to support this would be something along the lines of</p>
 	<code><pre>
 &lt;form&gt;
-	&lt;input type="text" id="x_2_coefficient" /&gt; * x &lt;sup&gt; 2 &lt;/sup&gt; +
-	&lt;input type="text" id="x_coefficient" /&gt; * x +
-	&lt;input type="text" id="constant" /&gt;
+	0 =	&lt;input type="text" id="x_2_coefficient"	/&gt; * x &lt;sup&gt; 2 &lt;/sup&gt; +
+		&lt;input type="text" id="x_coefficient"	/&gt; * x +
+		&lt;input type="text" id="constant"	/&gt;
 &lt;/form&gt;
 </pre>	</code>
 
-	<h3>Options</h3>
+	<h3><a name="options">Options</a></h3>
 
-	<h4>Bind</h4>
+	<h4><a name="bind">Bind</a></h4>
 
-	<code>
-$o.live_formula('.inputs', someFunction, { bind: 'keyup' }); // For a REALLY live form
-	</code>
+	<code><pre>
+$o.formula({
+	input:		'.input',
+	formula:	someFunction,
+	bind:		'keyup'		// For a REALLY live form
+});
+</pre>	</code>
 
 	<p>
 		Choose which event on the input fields to bind recalculation of the output field to.  The default is 'blur', and in my opinion that's the only one you'll ever need.
 	</p>
 
-	<h4>Taintable</h4>
+	<h4><a name="taintable">Taintable</a></h4>
 
-	<code>
-$o.live_formul('.inputs', someFunction, { taintable: true });
-	</code>
+	<code><pre>
+$o.formula({
+	input:		'.input',
+	formula:	someFunction,
+	taintable:	true
+});
+</pre>	</code>
 
 	<p>
 		By default, Count Form-u-la disables output fields to discourage the user from mucking about in them.  However, sometimes there are good reasons to allow a user to edit a field that otherwise is auto-calculated.  For those situations, there is taintable.
@@ -117,11 +159,15 @@ $o.live_formul('.inputs', someFunction, { taintable: true });
 		At the moment, the only way to untaint the field is by literally removing the entry in the jQuery data store.  Feel free to use that technique.  (TODO: Expose some way to untaint a field.)
 	</p>
 
-	<h4>Precision</h4>
+	<h4><a name="precision">Precision</a></h4>
 
-	<code>
-$o.live_formula('.inputs', someFunction, { precision: 'lowest' }); // standard scientific usage
-	</code>
+	<code><pre>
+$o.formula({
+	input:		'.inputs',
+	formula:	someFunction,
+	precision:	'lowest'	// standard scientific usage
+});
+</pre>	</code>
 
 	<p>Strategy for precision correction.  Defaults to the scientific definition of the term.  (TODO: Expose decimal places style of calculating precision, since that's what everybody thinks of.)  Choices:</p>
 	<dl>
