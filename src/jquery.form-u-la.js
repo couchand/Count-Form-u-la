@@ -34,17 +34,6 @@ var util = {
 		});
 		return max;
 	},
-	sum:
-	  function( input ){
-		if ( util.sum.unary ){
-			return ('undefined' === typeof input) ? 0 : input;
-		}
-		var sum = 0;
-		$.each(input, function(k, v){
-			sum = sum + v;
-		});
-		return sum;
-	},
 	count:
 	  function( input ){
 		if ( util.count.unary ){
@@ -154,11 +143,6 @@ var util = {
 		_resolve_input:
 		  function( input ){
 			return resolve_input( input );
-		},
-
-		_copy:
-		  function(i){
-			return i;
 		},
 
 		_create: function(){
@@ -381,5 +365,18 @@ $.each( selectors, function(k, v){
 					//	format: 'number',
 					//	beforeCalc: null,
 					//	afterCalc: null };
+
+	$.formula = function(){};
+	$.formula.copy = function(i){ return $.formula.copy.unary ? i : i[0]; };
+	$.formula.sum = function( input ){
+				if ( $.formula.sum.unary ){
+					return ('undefined' === typeof input) ? 0 : input;
+				}
+				var sum = 0;
+				$.each(input, function(k, v){
+					sum = sum + v;
+				});
+				return sum;
+			};
 
 })(jQuery);

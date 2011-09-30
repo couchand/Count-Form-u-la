@@ -48,19 +48,26 @@ test('Plugin hook created', 2, function(){
 
 module('Util', { setup: globalSetup });
 
-test('copy', 1, function(){
-	var	expected = 5, actual,
-		$field = $('#a'), widget;
-
-	$field.formula();
-	widget = $field.data('formula');
+test('copy unary', 1, function(){
+	var	expected = 5, actual;
 
 	// Start Test
-	actual = widget._copy( expected );
+	actual = $.formula.copy( expected );
 	// Stop Test
 
 	equal( expected, actual, 'The value should be copied.' );
 
+});
+
+test('sum', 1, function(){
+	var	i = { n1: 2, n2: 5, n3: -2 },
+		expected = i.n1 + i.n2 + i.n3, actual;
+
+	// Start Test
+	actual = $.formula.sum( i );
+	// Stop Test
+
+	equal( expected, actual, 'the values should be summed' );
 });
 
 test('Resolve inputs - number', 2, function(){
