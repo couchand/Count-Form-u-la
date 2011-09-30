@@ -62,7 +62,7 @@ $o.formula({
 		tax:	  '#tax',
 		surcharge: 5
 	}
-}, util.sum);
+}, $.formula.sum);
 </pre>			</code>
 		</li>
 	</ul>
@@ -77,7 +77,7 @@ $o.formula({
 		In any other case, the input will be passed as an object, with named parameters indicating each input according to the following rules:
 	</p>
 	<ul>
-		<li>If the inputs were passed in as an object, they will be passed to the function as an object, with the value of each input placed at it's named index.</li>
+		<li>If the inputs were passed in as an object, they will be passed to the function as an object, with the value of each input placed at its named index.</li>
 		<li>jQuery selectors that resolve to a single input are passed as a single value to the function.</li>
 		<li>jQuery selectors that resolve to multiple inputs are passed as an object of values with numeric keys.</li>
 	</ul>
@@ -95,6 +95,15 @@ function findValue(input){
 }
 
 $o.formula({ input: '.line_items', formula: findValue });
+</pre>	</code>
+	<p>Or simply,</p>
+	<code><pre>
+$o.formula({
+	input: '.line_items',
+	formula: function(input){
+		return arguments.callee.unary ? input : input[0];
+	}
+});
 </pre>	</code>
 	<p>
 		After re-reading this description, it sounds like this behavior should be changed so that Count Form-u-la consumers can blindly apply <code>jQuery.each</code>. (@TODO)

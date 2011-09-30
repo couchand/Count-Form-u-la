@@ -367,9 +367,9 @@ $.each( selectors, function(k, v){
 					//	afterCalc: null };
 
 	$.formula = function(){};
-	$.formula.copy = function(i){ return $.formula.copy.unary ? i : i[0]; };
+	$.formula.copy = function(i){ return arguments.callee.unary ? i : i[0]; };
 	$.formula.sum = function( input ){
-				if ( $.formula.sum.unary ){
+				if ( arguments.callee.unary ){
 					return ('undefined' === typeof input) ? 0 : input;
 				}
 				var sum = 0;
