@@ -462,9 +462,11 @@ test("one in many out", 3, function(){
 	$jQueryObject.val(init_val);
 	$o.val(init_val);
 
+	// Start Test
 	$jQueryObject.formula({ input: '#r'});
 
 	$o.val(test_val).blur();
+	// Stop Test
 
 	$jQueryObject.each(function(){
 		equal( test_val, $(this).val(), 'the test string should be transferred' );
@@ -480,9 +482,11 @@ test('empty values', 2, function(){
 		$a = $(a_sel), $r = $('#r'),
 		init_val = 4;
 
+	// Start Test
 	$r.val(init_val);
 
 	$r.formula({ input: '.in', formula: util.sum });
+	// Stop Test
 
 	$a.val('').blur();
 
@@ -504,9 +508,11 @@ test("basic input function", 1, function(){
 	$r.val(init_val);
 	$a.val(init_val);
 
-	$r.live_formula(a_sel, test_func);
+	// Start Test
+	$r.formula({ input: a_sel, formula: test_func });
 
 	$a.val(test_val).blur();
+	// Stop Test
 
 	equal( expected_val, $r.val(), 'the function should be applied' );
 
@@ -520,28 +526,37 @@ test('aggregate input function', 3, function(){
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = test_val_a + init_val   + init_val,
 		expected_value_2 = test_val_a + test_val_b + init_val,
-		expected_value_3 = test_val_a + test_val_b + test_val_c;
+		expected_value_3 = test_val_a + test_val_b + test_val_c,
+		actual_value_1, actual_value_2, actual_value_3;
 
 	$r.val(init_val);
 	$(input_sel).val(init_val);
 
-	$r.live_formula(input_sel, function(inputs){
-		var sum = 0;
-		$.each(inputs, function(k, v){
-//console.log('s='+(sum+v)+', added '+v+' for '+k);
-			sum = sum + v;
-		});
-		return sum;
+	// Start Test
+	$r.formula({
+		inputs: input_sel,
+		formula: function(inputs){
+			var sum = 0;
+			$.each(inputs, function(k, v){
+				sum = sum + v;
+			});
+			return sum;
+		}
 	});
 
 	$a.val(test_val_a).blur();
-	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+	actual_value_1 = $r.val();
 
 	$b.val(test_val_b).blur();
-	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+	actual_value_2 = $r.val();
 
 	$c.val(test_val_c).blur();
-	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+	actual_value_3 = $r.val();
+	// Stop Test
+
+	equal(expected_value_1, actual_value_1, 'the function should be continuously applied.');
+	equal(expected_value_2, actual_value_2, 'the function should be continuously applied.');
+	equal(expected_value_3, actual_value_3, 'the function should be continuously applied.');
 
 });
 
@@ -550,16 +565,23 @@ module('One selector and constant inputs', { setup: globalSetup });
 test('add constant value', 1, function(){
 
 	var	a_sel = '#a', $a = $(a_sel), $r = $('#r'),
-		init_val = 3, constant_val = 2, test_val = 7, expected_val = test_val + constant_val;
+		init_val = 3, constant_val = 2, test_val = 7, expected_val = test_val + constant_val, actual_val;
 
 	$r.val(init_val);
 	$a.val(init_val);
 
-	$r.live_formula({ a: a_sel, b: constant_val }, function(ins){ return ins.a + ins.b; });
+	// Start Test
+	$r.formula({
+		inputs: { a: a_sel, b: constant_val },
+		formula: function(ins){ return ins.a + ins.b; }
+	});
 
 	$a.val(test_val).blur();
 
-	equal( expected_val, $r.val(), 'the constant val should be pulled from the input' );
+	actual_val = $r.val();
+	// Stop Test
+
+	equal( expected_val, actual_val, 'the constant val should be pulled from the input' );
 
 });
 
