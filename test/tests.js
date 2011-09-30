@@ -52,6 +52,7 @@ test('copy unary', 1, function(){
 	var	expected = 5, actual;
 
 	// Start Test
+	$.formula.copy.unary = true;
 	actual = $.formula.copy( expected );
 	// Stop Test
 
@@ -483,21 +484,23 @@ test("one in many out", 3, function(){
 
 module('Handle malformed inputs', { setup: globalSetup });
 
-test('empty values', 2, function(){
+test('empty values', 3, function(){
 
 	var	a_sel = '#a',
 		$a = $(a_sel), $r = $('#r'),
 		init_val = 4;
 
-	// Start Test
+	$('.in').val(init_val);
 	$r.val(init_val);
 
+	// Start Test
 	$r.formula({ input: '.in', formula: util.sum });
-	// Stop Test
 
 	$a.val('').blur();
+	// Stop Test
 
-	ok( !$.isNaN( $r.val() ) && 'NaN' !== $r.val(), 'empty values should be gracefully handled.' );
+	ok( $.isNaN( $r.val() ), 'The output should not get NaN.' );
+	notEqual( 'NaN' !== $r.val(), 'empty values should be gracefully handled.' );
 	notEqual( init_val, $r.val(), 'event should still update the output' );
 
 });
@@ -541,12 +544,15 @@ test('aggregate input function', 3, function(){
 
 	// Start Test
 	$r.formula({
-		inputs: input_sel,
+		input: input_sel,
 		formula: function(inputs){
 			var sum = 0;
 			$.each(inputs, function(k, v){
 				sum = sum + v;
 			});
+
+			console.log(sum);
+
 			return sum;
 		}
 	});
@@ -579,7 +585,7 @@ test('add constant value', 1, function(){
 
 	// Start Test
 	$r.formula({
-		inputs: { a: a_sel, b: constant_val },
+		input: { a: a_sel, b: constant_val },
 		formula: function(ins){ return ins.a + ins.b; }
 	});
 
@@ -642,21 +648,31 @@ test('avg', 3, function(){
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = (test_val_a + init_val   + init_val  )/3,
 		expected_value_2 = (test_val_a + test_val_b + init_val  )/3,
-		expected_value_3 = (test_val_a + test_val_b + test_val_c)/3;
+		expected_value_3 = (test_val_a + test_val_b + test_val_c)/3,
+		actual_value_1, actual_value_2, actual_value_3;
 
 	$r.val(init_val);
 	$(input_sel).val(init_val);
 
-	$r.live_formula(input_sel,util.avg);
+	// Start Test
+	$r.formula({
+		input:		input_sel,
+		formula:	$.formula.avg
+	});
 
 	$a.val(test_val_a).blur();
-	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+	actual_value_1 = $r.val();
 
 	$b.val(test_val_b).blur();
-	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+	actual_value_2 = $r.val();
 
 	$c.val(test_val_c).blur();
-	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+	actual_value_3 = $r.val();
+	// Stop Test
+
+	equal(expected_value_1, actual_value_1, 'the function should be continuously applied.');
+	equal(expected_value_2, actual_value_2, 'the function should be continuously applied.');
+	equal(expected_value_3, actual_value_3, 'the function should be continuously applied.');
 
 });
 
@@ -668,21 +684,31 @@ test('sum', 3, function(){
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = test_val_a + init_val   + init_val,
 		expected_value_2 = test_val_a + test_val_b + init_val,
-		expected_value_3 = test_val_a + test_val_b + test_val_c;
+		expected_value_3 = test_val_a + test_val_b + test_val_c,
+		actual_value_1, actual_value_2, actual_value_3;
 
 	$r.val(init_val);
 	$(input_sel).val(init_val);
 
-	$r.live_formula(input_sel,util.sum);
+	// Start Test
+	$r.formula({
+		input: input_sel,
+		formula: $.formula.sum
+	});
 
 	$a.val(test_val_a).blur();
-	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+	actual_value_1 = $r.val();
 
 	$b.val(test_val_b).blur();
-	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+	actual_value_2 = $r.val();
 
 	$c.val(test_val_c).blur();
-	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+	actual_value_3 = $r.val();
+	//Stop Test
+
+	equal(expected_value_1, actual_value_1, 'the function should be continuously applied.');
+	equal(expected_value_2, actual_value_2, 'the function should be continuously applied.');
+	equal(expected_value_3, actual_value_3, 'the function should be continuously applied.');
 
 });
 
@@ -694,21 +720,31 @@ test('max', 3, function(){
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = Math.max(test_val_a, init_val,   init_val  ),
 		expected_value_2 = Math.max(test_val_a, test_val_b, init_val  ),
-		expected_value_3 = Math.max(test_val_a, test_val_b, test_val_c);
+		expected_value_3 = Math.max(test_val_a, test_val_b, test_val_c),
+		actual_value_1, actual_value_2, actual_value_3;
 
 	$r.val(init_val);
 	$(input_sel).val(init_val);
 
-	$r.live_formula(input_sel,util.max);
+	// Start Test
+	$r.formula({
+		input: input_sel,
+		formula: $.formula.max
+	});
 
 	$a.val(test_val_a).blur();
-	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+	actual_value_1 = $r.val();
 
 	$b.val(test_val_b).blur();
-	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+	actual_value_2 = $r.val();
 
 	$c.val(test_val_c).blur();
-	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+	actual_value_3 = $r.val();
+	// Stop Test
+
+	equal(expected_value_1, actual_value_1, 'the function should be continuously applied.');
+	equal(expected_value_2, actual_value_2, 'the function should be continuously applied.');
+	equal(expected_value_3, actual_value_3, 'the function should be continuously applied.');
 
 });
 
@@ -720,21 +756,31 @@ test('min', 3, function(){
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = Math.min(test_val_a, init_val,   init_val  ),
 		expected_value_2 = Math.min(test_val_a, test_val_b, init_val  ),
-		expected_value_3 = Math.min(test_val_a, test_val_b, test_val_c);
+		expected_value_3 = Math.min(test_val_a, test_val_b, test_val_c),
+		actual_val_1, actual_val_2, actual_val_3;
 
 	$r.val(init_val);
 	$(input_sel).val(init_val);
 
-	$r.live_formula(input_sel,util.min);
+	// Start Test
+	$r.formula({
+		input: input_sel,
+		formula: $.formula.min
+	});
 
 	$a.val(test_val_a).blur();
-	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+	actual_val_1 = $r.val();
 
 	$b.val(test_val_b).blur();
-	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+	actual_val_2 = $r.val();
 
 	$c.val(test_val_c).blur();
-	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+	actual_val_3 = $r.val();
+	// Stop Test
+
+	equal(expected_value_1, actual_val_1, 'the function should be continuously applied.');
+	equal(expected_value_2, actual_val_2, 'the function should be continuously applied.');
+	equal(expected_value_3, actual_val_3, 'the function should be continuously applied.');
 
 });
 
@@ -743,21 +789,31 @@ test('count', 3, function(){
 	var	input_sel = '.in',
 		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
 		init_val = 3,
-		test_val_a = 7, test_val_b = 9, test_val_c = 4;
+		test_val_a = 7, test_val_b = 9, test_val_c = 4,
+		actual_val_1, actual_val_2, actual_val_3;
 
 	$r.val(init_val);
 	$(input_sel).val(init_val);
 
-	$r.live_formula(input_sel,util.count);
+	// Start Test
+	$r.formula({
+		input: input_sel,
+		formula: $.formula.count
+	});
 
 	$a.val(test_val_a).blur();
-	equal(3, $r.val(), 'the function should be continuously applied.');
+	actual_val_1 = $r.val();
 
 	$b.val(test_val_b).blur();
-	equal(3, $r.val(), 'the function should be continuously applied.');
+	actual_val_2 = $r.val();
 
 	$c.val(test_val_c).blur();
-	equal(3, $r.val(), 'the function should be continuously applied.');
+	actual_val_3 = $r.val();
+	//Stop Test
+
+	equal(3, actual_val_1, 'the function should be continuously applied.');
+	equal(3, actual_val_2, 'the function should be continuously applied.');
+	equal(3, actual_val_3, 'the function should be continuously applied.');
 
 });
 

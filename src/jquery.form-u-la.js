@@ -6,60 +6,67 @@
  * Fall 2011
  *
  */
-var util = {
-	// Aggregate functions.
-	min:
-	  function( input ){
-		if ( util.min.unary ){
-			return input;
-		}
-		var min = 4294967295;
-		$.each(input, function(k, v){
-			if ( v < min ){
-				min = v;
-			}
-		});
-		return min;
-	},
-	max:
-	  function( input ){
-		if ( util.max.unary ){
-			return input;
-		}
-		var max = -4294967295;
-		$.each(input, function(k, v){
-			if ( v > max ){
-				max = v;
-			}
-		});
-		return max;
-	},
-	count:
-	  function( input ){
-		if ( util.count.unary ){
-			return ('undefined' === typeof input) ? 0 : 1;
-		}
-		var count = 0;
-		$.each(input, function(k, v){
-			count = count + 1
-		});
-		return count;
-	},
-	avg:
-	  function( input ){
-		if ( util.count.unary ){
-			return input;
-		}
-		var sum = 0, count = 0;
-		$.each(input, function(k, v){
-			sum = sum + v;
-			count = count + 1
-		});
-		return (sum/count);
-	}
-};
 
 (function($){
+
+	$.formula = function(){};
+	$.formula.copy = function(i){ return arguments.callee.unary ? i : i[0]; };
+	// Aggregate functions.
+	$.formula.sum = function( input ){
+			if ( arguments.callee.unary ){
+				return ('undefined' === typeof input) ? 0 : input;
+			}
+			var sum = 0;
+			$.each(input, function(k, v){
+				sum = sum + v;
+			});
+			return sum;
+		};
+	$.formula.avg = function( input ){
+			if ( arguments.callee.unary ){
+				return input;
+			}
+			var sum = 0, count = 0;
+			$.each(input, function(k, v){
+				sum = sum + v;
+				count = count + 1
+			});
+			return (sum/count);
+		};
+	$.formula.max = function( input ){
+			if ( arguments.callee.unary ){
+				return input;
+			}
+			var max = -4294967295;
+			$.each(input, function(k, v){
+				if ( v > max ){
+					max = v;
+				}
+			});
+			return max;
+		};
+	$.formula.min = function( input ){
+			if ( $.formula.min.unary ){
+				return input;
+			}
+			var min = 4294967295;
+			$.each(input, function(k, v){
+				if ( v < min ){
+					min = v;
+				}
+			});
+			return min;
+	};
+	$.formula.count = function( input ){
+			if ( $.formula.count.unary ){
+				return ('undefined' === typeof input) ? 0 : 1;
+			}
+			var count = 0;
+			$.each(input, function(k, v){
+				count = count + 1
+			});
+			return count;
+		};
 
 	function resolve_input( input ){
 		var i = {}, $i = $(''), s = [], j, q;
@@ -152,15 +159,7 @@ var	self		= this,
 	inputs_in	= self.options.input,
 	inputs, $inputs,
 	selectors, handler,
-	thisIndex, formula, temp;
-
-
-if ( $.isFunction( self.options.formula ) ){
-	formula = self.options.formula;
-}
-else {
-	formula = self._copy;
-}
+	thisIndex, temp;
 
 if ( 'undefined' === typeof inputs_in ){
 	return;
@@ -301,9 +300,9 @@ handler = function(){
 		});
 	}
 
-	formula.unary = !( $.isPlainObject( locals ) );
+	self.options.formula.unary = !( $.isPlainObject( locals ) );
 
-	value = formula( locals );
+	value = self.options.formula( locals );
 
 	if ( 'ignore' !== self.options.precision ){
 		value = self._setPrecision( value, precision );
@@ -359,24 +358,12 @@ $.each( selectors, function(k, v){
 		}
 	});
 
-	$.uix.formula.prototype.options = {	bind: 'blur',
+	$.uix.formula.prototype.options = {	formula: $.formula.copy,
+						bind: 'blur',
 						taintable: false,
 						precision: 'ignore' };
 					//	format: 'number',
 					//	beforeCalc: null,
 					//	afterCalc: null };
-
-	$.formula = function(){};
-	$.formula.copy = function(i){ return arguments.callee.unary ? i : i[0]; };
-	$.formula.sum = function( input ){
-				if ( arguments.callee.unary ){
-					return ('undefined' === typeof input) ? 0 : input;
-				}
-				var sum = 0;
-				$.each(input, function(k, v){
-					sum = sum + v;
-				});
-				return sum;
-			};
 
 })(jQuery);
