@@ -9,8 +9,6 @@
  *   Requires:
  *   - Q-Unit
  *   -   Modified by my patch to correct order of expected/actual in equality assertions
- *   - Fixtures
- *   -   Set up in index.html (should these be created dynamically? yes.) @TODO
  *
  */
 
