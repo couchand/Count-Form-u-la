@@ -208,7 +208,7 @@ handler = function(){
 	t = self._resolve_input(inputs_in);
 	inputs = t[0]; $inputs = t[1]; selectors = t[2];
 
-	input_count = util.count(inputs);
+	input_count = $.formula.count(inputs);
 
 	if ( !!inputs.jquery && 1 == inputs.size() ){
 		x = parseFloat( inputs.val() );

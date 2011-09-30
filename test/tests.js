@@ -494,7 +494,7 @@ test('empty values', 3, function(){
 	$r.val(init_val);
 
 	// Start Test
-	$r.formula({ input: '.in', formula: util.sum });
+	$r.formula({ input: '.in', formula: $.formula.sum });
 
 	$a.val('').blur();
 	// Stop Test
@@ -823,7 +823,7 @@ test('set precision on single selector', 2, function(){
 
 	var a_sel = '#a', $a = $(a_sel), $r = $('#r');
 
-	$r.live_formula(a_sel, util.copy, { precision: 'lowest' });
+	$r.live_formula(a_sel, $.formula.copy, { precision: 'lowest' });
 	$a.val( 2.5 ).blur();
 
 	equal( 2, $a.data( 'form-u-la.precision' ), 'the precision should be set in the input element data' );
@@ -835,7 +835,7 @@ test('set precision on multiple selector', 4, function(){
 
 	var in_sel = '.in', $jQueryObjectnputs = $(in_sel), $r = $('#r');
 
-	$r.live_formula(in_sel, util.sum, { precision: 'lowest' });
+	$r.live_formula(in_sel, $.formula.sum, { precision: 'lowest' });
 	$jQueryObjectnputs.val( 2.5 ).first().blur();
 
 	$jQueryObjectnputs.each(function(){
@@ -853,7 +853,7 @@ test('set precision on object of inputs', 4, function(){
 		$jQueryObjectnputs = $('.in'),
 		$r = $('#r');
 
-	$r.live_formula({ a: a_sel, b: b_sel, c: c_sel }, util.sum, { precision: 'lowest' });
+	$r.live_formula({ a: a_sel, b: b_sel, c: c_sel }, $.formula.sum, { precision: 'lowest' });
 	$jQueryObjectnputs.val( 2.5 ).first().blur();
 
 	$jQueryObjectnputs.each(function(){
@@ -958,7 +958,7 @@ test('add class after formula', 4, function(){
 	$('input').val(init_val);
 
 	$a.addClass(test_cls);
-	$r.live_formula(test_sel,util.sum);
+	$r.live_formula(test_sel,$.formula.sum);
 
 	$a.val(test_val_a).blur();
 	equal( expected_value_1, $r.val(), 'the formula should be applied to elements on the page' );
@@ -995,7 +995,7 @@ test('add elements after formula', 4, function(){
 	$('input').val(init_val);
 
 	$a.addClass(test_cls);
-	$r.live_formula(test_sel,util.sum);
+	$r.live_formula(test_sel,$.formula.sum);
 
 	$a.val(test_val_a).blur();
 	equal( expected_value_1, $r.val(), 'the formula should be applied to elements on the page' );
