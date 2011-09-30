@@ -186,10 +186,10 @@ $o.formula({
 	<h3>Basic sum</h3>
 	<form>
 
-		in: <input type="text" class="number in1"/>
+		.in: <input type="text" class="number in1"/>
 		<input type="text" class="number in1"/>
-		<input type="text" class="number in1"/>
-		sum: <input type="text" class="number out" id="sum1"/>
+		<input type="text" class="number in1"/><br />
+		#sum: <input type="text" class="number out" id="sum1"/>
 
 	</form>
 	<code>
@@ -202,10 +202,10 @@ $o.formula({
 	<h3>Bind calculation to keyupevent, Taintable outputs can be changed</h3>
 	<form>
 
-		in: <input type="text" class="number in2"/>
+		.in: <input type="text" class="number in2"/>
 		<input type="text" class="number in2"/>
-		<input type="text" class="number in2"/>
-		sum: <input type="text" class="number out" id="sum2"/>
+		<input type="text" class="number in2"/><br />
+		#sum: <input type="text" class="number out" id="sum2"/>
 
 	</form>
 	<code>
@@ -218,10 +218,10 @@ $o.formula({
 	<h3>Basic average</h3>
 	<form>
 
-		in: <input type="text" class="number in3"/>
+		.in: <input type="text" class="number in3"/>
 		<input type="text" class="number in3"/>
-		<input type="text" class="number in3"/>
-		avg: <input type="text" class="number out" id="avg3"/>
+		<input type="text" class="number in3"/><br />
+		#avg: <input type="text" class="number out" id="avg3"/>
 
 	</form>
 	<code>
@@ -234,10 +234,10 @@ $o.formula({
 	<h4>Keep track of significant figures</h4>
 	<form>
 
-		in: <input type="text" class="number in4"/>
+		.in: <input type="text" class="number in4"/>
 		<input type="text" class="number in4"/>
-		<input type="text" class="number in4"/>
-		avg: <input type="text" class="number out" id="avg4"/>
+		<input type="text" class="number in4"/><br />
+		#avg: <input type="text" class="number out" id="avg4"/>
 
 	</form>
 	<code>
@@ -250,17 +250,24 @@ $o.formula({
 	<h4>Named inputs</h4>
 	<form>
 
-		a: <input type="text" class="number in" id="a" value="0" />
-		b: <input type="text" class="number in" id="b" value="0" />
-		c: <input type="text" class="number in" id="c" value="0" />
-		result: <input type="text" class="number out" id="result"/>
+		#a: <input type="text" class="number in" id="a" value="0" />
+		#b: <input type="text" class="number in" id="b" value="0" />
+		#c: <input type="text" class="number in" id="c" value="0" /><br />
+		#result: <input type="text" class="number out" id="result"/>
 
 	</form>
-	<code>
-		$('#result').live_formula({ a: '#a', b: '#b', c: '#c' }, function(i){ return i.a + i.b + i.c });
-	</code>
+	<code><pre>
+$('#result').formula({
+	input: {
+		a: '#a',
+		b: '#b',
+		c: '#c'
+	},
+	formula: function(i){ return i.a + i.b + i.c }
+});
+</pre>	</code>
 	<script>
-		$('#result').live_formula({ a: '#a', b: '#b', c: '#c' }, function(i){ return i.a + i.b + i.c });
+		$('#result').formula({ input:{ a: '#a', b: '#b', c: '#c' }, formula: function(i){ return i.a + i.b + i.c } });
 	</script>
 
 
