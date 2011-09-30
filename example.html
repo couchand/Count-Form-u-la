@@ -192,11 +192,14 @@ $o.formula({
 		#sum: <input type="text" class="number out" id="sum1"/>
 
 	</form>
-	<code>
-		$('#sum').live_formula( '.in', util.sum );
-	</code>
+	<code><pre>
+$('#sum').formula({
+	input:		'.in',
+	formula:	$.formula.sum
+});
+</pre>	</code>
 	<script>
-		$('#sum1').live_formula( '.in1', util.sum );
+		$('#sum1').formula({ input: '.in1', formula: $.formula.sum });
 	</script>
 
 	<h3>Bind calculation to keyupevent, Taintable outputs can be changed</h3>
@@ -208,11 +211,16 @@ $o.formula({
 		#sum: <input type="text" class="number out" id="sum2"/>
 
 	</form>
-	<code>
-		$('#sum').live_formula( '.in', util.sum, { bind: 'keyup', taintable: true } );
-	</code>
+	<code><pre>
+$('#sum').formula({
+	input:		'.in',
+	formula:	$.formula.sum,
+	bind:		'keyup',
+	taintable:	true
+});
+</pre>	</code>
 	<script>
-		$('#sum2').live_formula( '.in2', util.sum, { bind: 'keyup', taintable: true } );
+		$('#sum2').formula({ input: '.in2', formula: $.formula.sum, bind: 'keyup', taintable: true });
 	</script>
 
 	<h3>Basic average</h3>
@@ -224,11 +232,14 @@ $o.formula({
 		#avg: <input type="text" class="number out" id="avg3"/>
 
 	</form>
-	<code>
-		$('#avg').live_formula( '.in', util.avg );
-	</code>
+	<code><pre>
+$('#avg').formula({
+	input:		'.in',
+	formula:	$.formula.avg
+});
+</pre>	</code>
 	<script>
-		$('#avg3').live_formula( '.in3', util.avg );
+		$('#avg3').formula({ input: '.in3', formula: $.formula.avg });
 	</script>
 
 	<h4>Keep track of significant figures</h4>
@@ -240,11 +251,15 @@ $o.formula({
 		#avg: <input type="text" class="number out" id="avg4"/>
 
 	</form>
-	<code>
-		$('#avg').live_formula( '.in', util.avg, { precision: 'lowest' } );
-	</code>
+	<code><pre>
+$('#avg').formula({
+	input:		'.in',
+	formula:	$.formula.avg,
+	precision:	'lowest'
+});
+</pre>	</code>
 	<script>
-		$('#avg4').live_formula( '.in4', util.avg, { precision: 'lowest' } );
+		$('#avg4').formula({ input: '.in4', formula: $.formula.avg, precision: 'lowest' });
 	</script>
 
 	<h4>Named inputs</h4>
@@ -263,7 +278,9 @@ $('#result').formula({
 		b: '#b',
 		c: '#c'
 	},
-	formula: function(i){ return i.a + i.b + i.c }
+	formula: function(i){
+		return i.a + i.b + i.c
+	}
 });
 </pre>	</code>
 	<script>
