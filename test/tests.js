@@ -7,6 +7,9 @@
  *   Fall 2011
  *
  *   Requires:
+ *   - jQuery (duh)
+ *   - jQuery UI
+ *   - Count Form-u-la (duh)
  *   - Q-Unit
  *   -   Modified by my patch to correct order of expected/actual in equality assertions
  *
@@ -499,7 +502,7 @@ test('empty values', 3, function(){
 	$a.val('').blur();
 	// Stop Test
 
-	ok( $.isNaN( $r.val() ), 'The output should not get NaN.' );
+	ok( !$.isNaN( $r.val() ), 'The output should not get NaN.' );
 	notEqual( 'NaN' !== $r.val(), 'empty values should be gracefully handled.' );
 	notEqual( init_val, $r.val(), 'event should still update the output' );
 
@@ -550,9 +553,6 @@ test('aggregate input function', 3, function(){
 			$.each(inputs, function(k, v){
 				sum = sum + v;
 			});
-
-			console.log(sum);
-
 			return sum;
 		}
 	});
@@ -891,11 +891,20 @@ test('truncate output to precision', 1, function(){
 		b_sel = '#b', $b = $(b_sel),
 		$r = $('#r');
 
-	$r.live_formula({ a: a_sel, b: b_sel }, function(i){
-		return (i.a + i.b)/2;
-	}, { precision: 'lowest' });
+	// Start Test
+	$r.formula({
+		input: {
+			a: a_sel,
+			b: b_sel
+		},
+		formula: function(i){
+			return (i.a + i.b)/2;
+		},
+		precision: 'lowest'
+	});
 	$a.val( "2.5" );
 	$b.val( "3.0" ).blur();
+	// Stop Test
 
 	equal( "2.8", $r.val(), 'the output should be truncated to the precision' );
 
@@ -911,9 +920,19 @@ test("One selector one number", 1, function(){
 	$a.val(init_val);
 	$b.val(test_constant);
 
-	$r.live_formula({ a: '#a', b: '#b' }, function(inputs){ return (inputs.a + inputs.b); });
+	// Start Test
+	$r.formula({
+		input: {
+			a: '#a',
+			b: '#b'
+		},
+		formula: function(i){
+			return (i.a + i.b);
+		}
+	});
 
 	$a.val(test_val).blur();
+	// Stop Test
 
 	equal( expected_val, $r.val(), 'the function should be applied to the named arguments' );
 
@@ -930,11 +949,13 @@ test('Two parallel copy formulas', 2, function(){
 	$c.val(init_val);
 	$r.val(init_val);
 
-	$c.live_formula('#a');
-	$r.live_formula('#b');
+	// Start Test
+	$c.formula({ input: '#a' });
+	$r.formula({ input: '#b' });
 
 	$a.val(test_val_a).blur();
 	$b.val(test_val_b).blur();
+	// Stop Test
 
 	equal( test_val_a, $c.val(), 'the formulas should not interfere.' );
 	equal( test_val_b, $r.val(), 'the formulas should not interfere.' );
@@ -950,10 +971,12 @@ test('Two serial copy formulas', 2, function(){
 	$c.val(init_val);
 	$r.val(init_val);
 
-	$c.live_formula('#a');
-	$r.live_formula('#c');
+	// Start Test
+	$c.formula({ input: '#a' });
+	$r.formula({ input: '#c' });
 
 	$a.val(test_val).blur();
+	// Stop Test
 
 	equal( test_val, $c.val(), 'the formulas should not interfere.' );
 	equal( test_val, $r.val(), 'the formulas should follow-on.' );
@@ -975,25 +998,33 @@ test('add class after formula', 4, function(){
 		expected_value_1 = test_val_a,
 		expected_value_2 = test_val_a + test_val_b,
 		expected_value_3 = test_val_a + test_val_b + test_val_c,
-		expected_value_4 = test_val_b + test_val_c;
+		expected_value_4 = test_val_b + test_val_c,
+		actual_value_1, actual_value_2, actual_value_3, actual_value_4; 
 
 	$('input').val(init_val);
 
+	// Start Test
 	$a.addClass(test_cls);
-	$r.live_formula(test_sel,$.formula.sum);
+	$r.formula({ input: test_sel, formula: $.formula.sum });
 
 	$a.val(test_val_a).blur();
-	equal( expected_value_1, $r.val(), 'the formula should be applied to elements on the page' );
+	actual_value_1 = $r.val();
 
 	$b.addClass(test_cls).val(test_val_b).blur();
-	equal( expected_value_2, $r.val(), 'the formula should be applied to new elements' );
+	actual_value_2 = $r.val();
 
 	$c.addClass(test_cls).val(test_val_c).blur();
-	equal( expected_value_3, $r.val(), 'the formula should be applied to new elements' );
+	actual_value_3 = $r.val();
 
 	$a.removeClass(test_cls);
 	$b.blur();
-	equal( expected_value_4, $r.val(), 'the formula should not be applied to removed elements' );
+	actual_value_4 = $r.val();
+	// Stop Test
+
+	equal( expected_value_1, actual_value_1, 'the formula should be applied to elements on the page' );
+	equal( expected_value_2, actual_value_2, 'the formula should be applied to new elements' );
+	equal( expected_value_3, actual_value_3, 'the formula should be applied to new elements' );
+	equal( expected_value_4, actual_value_4, 'the formula should not be applied to removed elements' );
 
 });
 
@@ -1016,22 +1047,29 @@ test('add elements after formula', 4, function(){
 
 	$('input').val(init_val);
 
+	// Start Test
 	$a.addClass(test_cls);
-	$r.live_formula(test_sel,$.formula.sum);
+	$r.formula({ input: test_sel, formula: $.formula.sum });
 
 	$a.val(test_val_a).blur();
-	equal( expected_value_1, $r.val(), 'the formula should be applied to elements on the page' );
+	actual_value_1 = $r.val();
 
 	$b.appendTo('form').val(test_val_b).blur();
-	equal( expected_value_2, $r.val(), 'the formula should be applied to new elements' );
+	actual_value_2 = $r.val();
 
 	$('form').append(c);
 	$(new_el_sel).val(test_val_c).blur();
-	equal( expected_value_3, $r.val(), 'the formula should be applied to new elements' );
+	actual_value_3 = $r.val();
 
 	$a.removeClass(test_cls);
 	$b.blur();
-	equal( expected_value_4, $r.val(), 'the formula should not be applied to removed elements' );
+	actual_value_4 = $r.val();
+	// Stop Test
+
+	equal( expected_value_1, actual_value_1, 'the formula should be applied to elements on the page' );
+	equal( expected_value_2, actual_value_2, 'the formula should be applied to new elements' );
+	equal( expected_value_3, actual_value_3, 'the formula should be applied to new elements' );
+	equal( expected_value_4, actual_value_4, 'the formula should not be applied to removed elements' );
 
 });
 
@@ -1044,9 +1082,15 @@ test("Set bind event", 1, function(){
 	$r.val(init_val);
 	$a.val(init_val);
 
-	$r.live_formula('#a', function(input){ return (input); }, { bind: 'keyup' });
+	// Start Test
+	$r.formula({
+		input: '#a',
+		formula: function(input){ return (input); },
+		bind: 'keyup'
+	});
 
 	$a.val(test_val).keyup();
+	// Stop Test
 
 	equal( test_val, $r.val(), 'the newly bound event should activate the calculation' );
 
@@ -1059,10 +1103,16 @@ test('taintable', 2, function(){
 	$a.val(init_val);
 	$r.val(init_val);
 
-	$r.live_formula('#a', function(i){ return i[0]; }, { taintable: true });
+	// Start Test
+	$r.formula({
+		input: '#a',
+		formula: function(i){ return i[0]; },
+		taintable: true
+	});
 
 	$r.val(taint_val).change();
 	$a.val(test_val).blur();
+	// Stop Test
 
 	equal( taint_val, $r.val(), 'tainted values should not be updated.' );
 
