@@ -68,6 +68,14 @@
 			return count;
 		};
 
+	$.uix.formula.prototype.options = {	formula: $.formula.copy,
+						bind: 'blur',
+						taintable: false,
+						precision: 'ignore' };
+					//	format: 'number',
+					//	beforeCalc: null,
+					//	afterCalc: null };
+
 	function resolve_input( input ){
 		var i = {}, $i = $(''), s = [], j, q;
 		if ( 'number' === typeof input ){
@@ -357,13 +365,4 @@ $.each( selectors, function(k, v){
 
 		}
 	});
-
-	$.uix.formula.prototype.options = {	formula: $.formula.copy,
-						bind: 'blur',
-						taintable: false,
-						precision: 'ignore' };
-					//	format: 'number',
-					//	beforeCalc: null,
-					//	afterCalc: null };
-
 })(jQuery);
