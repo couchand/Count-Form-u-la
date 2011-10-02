@@ -116,7 +116,10 @@
 
 			var t = {}, self = this;
 			$.each(theInputs, function(key){
-				t[key] = self._evaluateInput( wrap ? $(this) : this );
+				var val = self._evaluateInput( wrap ? $(this) : this );
+				if( 'undefined' !== typeof val ){
+					t[key] = val;
+				}
 			});
 			return t;
 
