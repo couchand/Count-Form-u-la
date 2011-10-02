@@ -144,7 +144,7 @@
 				strVal = theInput;
 				x = parseFloat(strVal);
 			}
-			else if ( 'number' === typeof theInput ){
+			else if ( 'number' === typeof theInput || ( theInput.constructor && Number === theInput.constructor ) ){
 				x = theInput;
 				strVal = '' + x;
 			}
@@ -152,8 +152,6 @@
 				return self._evaluateInputs( theInput, false );
 			}
 			else {
-		//		console.log( typeof theInput );
-		//		console.log( theInput );
 				return;
 			}
 

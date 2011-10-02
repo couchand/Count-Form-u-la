@@ -586,7 +586,7 @@ test('add constant value', 1, function(){
 	// Start Test
 	$r.formula({
 		input: { a: a_sel, b: constant_val },
-		formula: function(ins){ return ins.a + ins.b; }
+		formula: function(i){ return i.a + i.b; }
 	});
 
 	$a.val(test_val).blur();
