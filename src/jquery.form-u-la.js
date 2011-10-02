@@ -112,9 +112,8 @@
 	$.widget( 'uix.formula', {
 
 		_evaluateInput:
-		  function ( theInput, precision, precision_func, defaultvalue ){
+		  function ( theInput ){
 			var strVal,
-			    precision,
 			    x, p, size;
 
 			if ( !!theInput.jquery ){
@@ -146,13 +145,13 @@
 				theInput.data( 'form-u-la.precision', p );
 			}
 
-			precision = precision_func( precision, p );
+			this._precision = this._precision_func( this._precision, p );
 
 			if ( !$.isNaN(x) ){
-				return [x, precision];
+				return x;
 			}
-			else if ( 'undefined' !== typeof defaultValue ){
-				return [defaultValue, this._getPrecision( defaultValue )];
+			else if ( 'undefined' !== typeof this.options.defaultValue ){
+				return this.options.defaultValue;
 			}
 		},
 
@@ -221,7 +220,7 @@ if ( 'undefined' === typeof inputs_in ){
 handler = function(){
 
 	var	locals = {}, value, x, t,
-		input_count, precision, precision_func, p,
+		input_count, precision, p,
 		$tryWrapping, allTainted = true;
 
 	$outputs.each(function(){
@@ -232,7 +231,7 @@ handler = function(){
 		return;
 	}
 
-	precision_func = function(a, b){
+	self._precision_func = function(a, b){
 		var pf =	('ignore' === self.options.precision) ?
 					function(a, b){ return Number.NaN; }
 				:('lowest' === self.options.precision) ?
@@ -256,16 +255,12 @@ handler = function(){
 
 	};
 
-
-
 	t = self._resolve_input(inputs_in);
-	inputs = t[0]; $inputs = t[1]; selectors = t[2];
+	input = t[0]; $inputs = t[1]; selectors = t[2];
 
-	input_count = $.formula.count(inputs);
-
-	t = self._evaluateInput( inputs, precision, precision_func );
-	if ( 'undefined' !== typeof t ){
-		locals = t[0]; precision = t[1];
+	locals = self._evaluateInput( input );
+	if( 'undefined' === typeof locals ){
+		return;
 	}
 
 /*
@@ -388,14 +383,14 @@ handler = function(){
 	value = self.options.formula( locals );
 
 	if ( 'ignore' !== self.options.precision ){
-		value = self._setPrecision( value, precision );
+		value = self._setPrecision( value, self._precision );
 	}
 
 	$outputs.each(function(){
 		var $out = $(this);
 		if ( 'undefined' === typeof $out.data('form-u-la.tainted') ){
 			$out.val( value );
-			$out.data( 'form-u-la.precision', precision );
+			$out.data( 'form-u-la.precision', self._precision );
 		}
 	});
 
