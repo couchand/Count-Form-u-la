@@ -867,7 +867,7 @@ test('set precision on object of inputs', 4, function(){
 
 	// Start Test
 	$r.formula({
-		inputs: {
+		input: {
 			a: a_sel,
 			b: b_sel,
 			c: c_sel
