@@ -7,10 +7,11 @@
  *   Fall 2011
  *
  *   Requires:
+ *   - jQuery (duh)
+ *   - jQuery UI
+ *   - Count Form-u-la (duh)
  *   - Q-Unit
  *   -   Modified by my patch to correct order of expected/actual in equality assertions
- *   - Fixtures
- *   -   Set up in index.html (should these be created dynamically? yes.) @TODO
  *
  */
 
@@ -42,194 +43,405 @@ test('require the number of expected assertions -- not expected to even show up 
 });
 */
 
-test("Plugin hook created", 2, function(){
-	var hook = $('<p></p>').live_formula;
-	ok( hook, "The plugin hook exists" );
-	ok( $.isFunction( hook ), "The hook is a function" );
+test('Plugin hook created', 2, function(){
+	var hook = $('<p></p>').formula;
+	ok( hook,			'The plugin hook exists' );
+	ok( $.isFunction( hook ),	'The hook is a function' );
 });
 
-module("Util", { setup: globalSetup });
+module('Util', { setup: globalSetup });
 
-test("Resolve inputs - number", 2, function(){
-	var num = 5, i, $i, t;
+test('copy unary', 1, function(){
+	var	expected = 5, actual;
 
-	t = util.resolve_input(num);
-	i = t[0]; $i = t[1];
+	// Start Test
+	$.formula.copy.unary = true;
+	actual = $.formula.copy( expected );
+	// Stop Test
 
-	equal( 0, $i.length, "no jQuery elements should be returned" );
+	equal( expected, actual, 'The value should be copied.' );
 
-	equal( num, i, "resoving a number should yield the number itself" );
 });
 
-test("Resolve inputs - single selector", 6, function(){
-	var sel = ".out", i, $i, t;
+test('sum', 1, function(){
+	var	i = { n1: 2, n2: 5, n3: -2 },
+		expected = i.n1 + i.n2 + i.n3, actual;
 
-	t = util.resolve_input(sel);
-	i = t[0]; $i = t[1];
+	// Start Test
+	actual = $.formula.sum( i );
+	// Stop Test
 
-	equal( 1, $i.length, "one jQuery element should be returned" );
-
-	ok( 'undefined' !== typeof $i.jquery, 'resolving a selector should yield a jQuery element' );
-	ok( $i.is('input[type="text"]'), 'the right element should be found' );
-	ok( $i.hasClass('number'), 'the right element should be found' );
-
-	equal( 'r', $i.attr('id'), 'the proper element should be found' );
-	equal( 'r', i.attr('id'), 'the proper element should be found' );
+	equal( expected, actual, 'the values should be summed' );
 });
 
-test("Resolve inputs - multiple selector", 11, function(){
-	var sel = ".in", i, $i, t;
+test('Resolve inputs - number', 2, function(){
+	var	expected = 5, actual, $jQueryObject, temp,
+		$field = $('#a'), widget;
 
-	t = util.resolve_input(sel);
-	i = t[0]; $i = t[1];
+	$field.formula();
+	widget = $field.data('formula');
 
-	ok( 'undefined' !== typeof $i.jquery, 'resolving a selector should yield a jQuery element' );
+	// Start Test
+	temp = widget._resolve_input( expected );
 
-	equal( 3, $i.size(), "three jQuery elements should be returned" );
+	actual = temp[0]; $jQueryObject = temp[1];
+	// Stop Test
 
-	$i.each(function(){
+	equal( 0, $jQueryObject.length, 'no jQuery elements should be returned' );
+
+	equal( expected, actual,	'resoving a num should yield the number itself' );
+});
+
+test('Resolve inputs - single selector', 6, function(){
+	var	selector = '.out', actual, $jQueryObject, temp,
+		$field = $('#a'), widget;
+
+	$field.formula();
+	widget = $field.data('formula');
+
+	// Start Test
+	temp = widget._resolve_input(selector);
+	actual = temp[0]; $jQueryObject = temp[1];
+	// Stop Test
+
+	equal( 1, $jQueryObject.length, 'one jQuery element should be returned' );
+
+	ok( 'undefined' !== typeof $jQueryObject.jquery,	'resolving a selector should yield a jQuery element'	);
+	ok( $jQueryObject.is('input[type="text"]'),		'the right element should be found'			);
+	ok( $jQueryObject.hasClass('number'),			'the right element should be found'			);
+
+	equal( 'r', $jQueryObject.attr('id'),			'the proper element should be found'			);
+	equal( 'r', actual.attr('id'),				'the proper element should be found'			);
+});
+
+test('Resolve inputs - multiple selector', 11, function(){
+	var	selector = '.in', actual, $jQueryObject, temp,
+		$field = $('#r'), widget;
+
+	$field.formula();
+	widget = $field.data('formula');
+
+	// Start Test
+	temp = widget._resolve_input(selector);
+	actual = temp[0]; $jQueryObject = temp[1];
+	// Stop Test
+
+	ok( 'undefined' !== typeof $jQueryObject.jquery, 'resolving a selector should yield a jQuery element' );
+
+	equal( 3, $jQueryObject.size(), 'three jQuery elements should be returned' );
+
+	$jQueryObject.each(function(){
 
 		var $e = $(this);
 
-		ok( $e.is('input[type="text"]'), 'the right element should be found' );
-		ok( $e.hasClass('number'), 'the proper element should be found' );
-		ok( $e.hasClass('i'), 'the proper element should be found' );
+		ok( $e.is('input[type="text"]'),	'the right element should be found'	);
+		ok( $e.hasClass('number'),		'the proper element should be found'	);
+		ok( $e.hasClass('i'),			'the proper element should be found'	);
 
 	});
 });
 
-test("Resolve inputs - object of numbers", 4, function(){
+test('Resolve inputs - object of numbers', 4, function(){
 
-	var x_val = 7, y_val = 9, i, $i, t;
+	var	expected_x = 7, expected_y = 9, actual, $jQueryObject, temp,
+		$field = $('#r'), widget;
 
-	t = util.resolve_input({ x: x_val, y: y_val });
-	i = t[0]; $i = t[1];
+	$field.formula();
+	widget = $field.data('formula');
 
-	ok( 'undefined' !== typeof $i.jquery, 'resolving a no selectors should yield an empty jQuery element' );
+	// Start Test
+	temp = widget._resolve_input({ x: expected_x, y: expected_y });
+	actual = temp[0]; $jQueryObject = temp[1];
+	// Stop Test
 
-	equal( 0, $i.size(), "no jQuery elements should be returned" );
+	ok( 'undefined' !== typeof $jQueryObject.jquery,	'resolving a no selectors should yield an empty jQuery element'	);
 
-	equal( x_val, i.x, 'the input object values should be returned' );
-	equal( y_val, i.y, 'the input object values should be returned' );
+	equal( 0, $jQueryObject.size(),				'no jQuery elements should be returned'				);
+
+	equal( expected_x, actual.x,				'the input object values should be returned'			);
+	equal( expected_y, actual.y,				'the input object values should be returned'			);
 
 });
 
 test("Resolve inputs - object of selectors", 10, function(){
 
-	var test_val = 7, a_sel = '#a', r_sel = '#r', i, $i, k, $el, t;
+	var expected = 7, selector_a = '#a', selector_r = '#r', actual, $jQueryObject, key, $input, temp,
+		$field = $('#b'), widget;
 
-	$(a_sel).val(test_val);
-	$(r_sel).val(test_val);
+	$field.formula();
+	widget = $field.data('formula');
 
-	t = util.resolve_input({ a: a_sel, r: r_sel });
-	i = t[0]; $i = t[1];
+	$( selector_a ).val(expected);
+	$( selector_r ).val(expected);
 
-	equal( 2, $i.size(), 'all selectors in the object should be added to the returned jquery wrapper' );
+	// Start Test
+	temp = widget._resolve_input({ a: selector_a, r: selector_r });
+	actual = temp[0]; $jQueryObject = temp[1];
+	// Stop Test
 
-	for( k in i ){
-		$el = i[k];
+	equal( 2, $jQueryObject.size(), 'all selectors in the object should be added to the returned jquery wrapper' );
 
-		equal( test_val, $el.val(), 'Each selector in the object should be resolved to a jQuery object' );
+	for( key in actual ){
+		$input = actual[key];
 
-		ok( $el.is('input[type="text"]'), 'the right element should be found' );
-		ok( $el.hasClass('number'), 'the right element should be found' );
+		equal( expected, $input.val(), 'Each selector in the object should be resolved to a jQuery object' );
+
+		ok( $input.is('input[type="text"]'), 'the right element should be found' );
+		ok( $input.hasClass('number'), 'the right element should be found' );
 	}
 
-	ok( i.a.hasClass('in'), 'the right element should be found' );
-	ok( i.r.hasClass('out'), 'the right element should be found' );
-	ok( ($i.first().hasClass('in') && $i.last().hasClass('out')) || (i.first().hasClass('out') && $i.last().hasClass('in')),
-		'the right elements should be found' );
+	ok( actual.a.hasClass('in'), 'the right element should be found' );
+	ok( actual.r.hasClass('out'), 'the right element should be found' );
+	ok(
+		(	$jQueryObject.first().hasClass('in') && $jQueryObject.last().hasClass('out')	)
+			||
+		(	$jQueryObject.first().hasClass('out') && $jQueryObject.last().hasClass('in')		),
+		'the right elements should be found'
+	  );
 
 });
-
 
 module('getPrecision - default behavior', { setup: globalSetup });
 
 test('empty string', 1, function(){
-	equal( null, util.getPrecision(''), 'the error code is null' );
+	var	actual, widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision('');
+	// Stop Test
+
+	equal( null, actual, 'the error code is null' );
 });
 test('text input', 1, function(){
-	equal( null, util.getPrecision('foobar'), 'the error code is null' );
+	var	actual, test_string = 'foobar',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( null, actual, 'the error code is null' );
 });
 test('integer', 1, function(){
-	equal( 1, util.getPrecision('2'), 'the precision should be the number of significant figures' );
+	var	actual, test_string = '2',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 1, actual, 'the precision should be the number of significant figures' );
 });
 test('simple float', 1, function(){
-	equal( 2, util.getPrecision('2.5'), 'the precision should be the number of significant figures' );
+	var	actual, test_string = '2.5',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 2, actual, 'the precision should be the number of significant figures' );
 });
 test('negative float', 1, function(){
-	equal( 2, util.getPrecision('-2.5'), 'the precision should be the number of significant figures' );
+	var	actual, test_string = '-2.5',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 2, actual, 'the precision should be the number of significant figures' );
 });
 test('trailing zeros after decimal point', 1, function(){
-	equal( 4, util.getPrecision('800.0'), 'zeros after the decimal point should always count'); 
+	var	actual, test_string = '800.0',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 4, actual, 'zeros after the decimal point should always count'); 
 });
 test('trailing zeros no decimal point', 1, function(){
-	equal( 1, util.getPrecision('800'), 'zeros without a decimal point should not count' );
+	var	actual, test_string = '800',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 1, actual, 'zeros without a decimal point should not count' );
 });
 test('trailing zeros with decimal point', 1, function(){
-	equal( 3, util.getPrecision('800.'), 'zeros before the decimal point should count'); 
+	var	actual, test_string = '800.',
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 3, actual, 'zeros before the decimal point should count'); 
 });
 
 
 module('getPrecision - assume zeros are significant', { setup: globalSetup });
 
 test('trailing zeros after decimal point', 1, function(){
-	equal( 4, util.getPrecision('800.0', 'assumeZeros'), 'zeros after the decimal point should always count'); 
+	var	actual, test_string = '800.0',
+		widget = $('#r').formula({ precisionMode: 'assumeZeros' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 4, actual, 'zeros after the decimal point should always count'); 
 });
 test('trailing zeros no decimal point', 1, function(){
-	equal( 3, util.getPrecision('800', 'assumeZeros'), 'zeros without a decimal point should count' );
+	var	actual, test_string = '800',
+		widget = $('#r').formula({ precisionMode: 'assumeZeros' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 3, actual, 'zeros without a decimal point should count when set' );
 });
 test('trailing zeros with decimal point', 1, function(){
-	equal( 3, util.getPrecision('800.'), 'zeros before the decimal point should count'); 
+	var	actual, test_string = '800.',
+		widget = $('#r').formula({ precisionMode: 'assumeZeros' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 3, actual, 'zeros before the decimal point should count'); 
 });
 
 module('getPrecision - only count decimal places', { setup: globalSetup });
 
 test('integer', 1, function(){
-	equal( 0, util.getPrecision('2', 'decimalPlaces'), 'the precision should be the number of decimal places' );
+	var	actual, test_string = '2',
+		widget = $('#r').formula({ precisionMode: 'decimalPlaces' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 0, actual, 'the precision should be the number of decimal places' );
 });
 test('simple float', 1, function(){
-	equal( 1, util.getPrecision('2.5', 'decimalPlaces'), 'the precision should be the number of decimal places' );
+	var	actual, test_string = '2.5',
+		widget = $('#r').formula({ precisionMode: 'decimalPlaces' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 1, actual, 'the precision should be the number of decimal places' );
 });
 test('negative float', 1, function(){
-	equal( 1, util.getPrecision('-2.5', 'decimalPlaces'), 'the precision should be the number of decimal places' );
+	var	actual, test_string = '-2.5',
+		widget = $('#r').formula({ precisionMode: 'decimalPlaces' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 1, actual, 'the precision should be the number of decimal places' );
 });
 test('trailing zeros after decimal point', 1, function(){
-	equal( 1, util.getPrecision('800.0', 'decimalPlaces'), 'zeros after the decimal point should always count'); 
+	var	actual, test_string = '800.0',
+		widget = $('#r').formula({ precisionMode: 'decimalPlaces' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 1, actual, 'zeros after the decimal point should always count'); 
 });
 test('trailing zeros no decimal point', 1, function(){
-	equal( 0, util.getPrecision('800', 'decimalPlaces'), 'zeros without a decimal point should not count' );
+	var	actual, test_string = '800',
+		widget = $('#r').formula({ precisionMode: 'decimalPlaces' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 0, actual, 'zeros without a decimal point should not count' );
 });
 test('trailing zeros with decimal point', 1, function(){
-	equal( 0, util.getPrecision('800.', 'decimalPlaces'), 'zeros before the decimal point should not count'); 
+	var	actual, test_string = '800.',
+		widget = $('#r').formula({ precisionMode: 'decimalPlaces' }).data('formula');
+
+	// Start Test
+	actual = widget._getPrecision( test_string );
+	// Stop Test
+
+	equal( 0, actual, 'zeros before the decimal point should not count'); 
 });
 
 
 module('setPrecision - default behavior', { setup: globalSetup });
 
 test('integer not cut off', 1, function(){
-	var ival = 8769, sval = '' + ival;
-	equal( sval, util.setPrecision(ival, 4), 'the integer should pass through' );
+	var	test_val = 8769, expected = '' + test_val, precision = 4, actual,
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._setPrecision( test_val, precision );
+	// Stop Test
+
+	equal( expected, actual, 'the integer should pass through' );
 });
 test('integer rounded up', 1, function(){
-	var ival = 8765, sval = '8770';
-	equal( sval, util.setPrecision(ival, 3), 'the number should be rounded to three significant figures' );
+	var	test_val = 8765, expected = '8770', precision = 3, actual,
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._setPrecision( test_val, precision );
+	// Stop Test
+
+	equal( expected, actual, 'the number should be rounded to three significant figures' );
 });
 test('integer rounded down', 1, function(){
-	var ival = 8764, sval = '8760';
-	equal( sval, util.setPrecision(ival, 3), 'the number should be rounded to three significant figures' );
+	var	test_val = 8764, expected = '8760', precision = 3, actual,
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._setPrecision( test_val, precision );
+	// Stop Test
+
+	equal( expected, actual, 'the number should be rounded to three significant figures' );
 });
 test('float not cut off', 1, function(){
-	var ival = 876.9, sval = '' + ival;
-	equal( sval, util.setPrecision(ival, 4), 'the float should pass through' );
+	var	test_val = 876.9, expected = '' + test_val, precision = 4, actual,
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._setPrecision( test_val, precision );
+	// Stop Test
+
+	equal( expected, actual, 'the float should pass through' );
 });
 test('float rounded up', 1, function(){
-	var ival = 876.50, sval = '877';
-	equal( sval, util.setPrecision(ival, 3), 'the number should be rounded to three significant figures' );
+	var	test_val = 876.50, expected = '877', precision = 3, actual,
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._setPrecision( test_val, precision );
+	// Stop Test
+
+	equal( expected, actual, 'the number should be rounded to three significant figures' );
 });
 test('float rounded down', 1, function(){
-	var ival = 876.49, sval = '876';
-	equal( sval, util.setPrecision(ival, 3), 'the number should be rounded to three significant figures' );
+	var	test_val = 876.49, expected = '876', precision = 3, actual,
+		widget = $('#r').formula().data('formula');
+
+	// Start Test
+	actual = widget._setPrecision( test_val, precision );
+	// Stop Test
+
+	equal( expected, actual, 'the number should be rounded to three significant figures' );
 });
 
 
@@ -242,9 +454,11 @@ test("one in one out", 2, function(){
 	$r.val(init_val);
 	$a.val(init_val);
 
-	$r.live_formula('#a');
+	// Start Test
+	$r.formula({ input: '#a'});
 
 	$a.val(test_val).blur();
+	// Stop Test
 
 	equal( test_val, $r.val(), 'the test string should be transferred' );
 
@@ -254,16 +468,18 @@ test("one in one out", 2, function(){
 
 test("one in many out", 3, function(){
 
-	var $i = $('.in'), $o = $('#r'), init_val = 3, test_val = 7;
+	var $jQueryObject = $('.in'), $o = $('#r'), init_val = 3, test_val = 7;
 
-	$i.val(init_val);
+	$jQueryObject.val(init_val);
 	$o.val(init_val);
 
-	$i.live_formula('#r');
+	// Start Test
+	$jQueryObject.formula({ input: '#r'});
 
 	$o.val(test_val).blur();
+	// Stop Test
 
-	$i.each(function(){
+	$jQueryObject.each(function(){
 		equal( test_val, $(this).val(), 'the test string should be transferred' );
 	});
 
@@ -271,19 +487,23 @@ test("one in many out", 3, function(){
 
 module('Handle malformed inputs', { setup: globalSetup });
 
-test('empty values', 2, function(){
+test('empty values', 3, function(){
 
 	var	a_sel = '#a',
 		$a = $(a_sel), $r = $('#r'),
 		init_val = 4;
 
+	$('.in').val(init_val);
 	$r.val(init_val);
 
-	$r.live_formula('.in',util.sum);
+	// Start Test
+	$r.formula({ input: '.in', formula: $.formula.sum });
 
 	$a.val('').blur();
+	// Stop Test
 
-	ok( !$.isNaN( $r.val() ) && 'NaN' !== $r.val(), 'empty values should be gracefully handled.' );
+	ok( !$.isNaN( $r.val() ), 'The output should not get NaN.' );
+	notEqual( 'NaN' !== $r.val(), 'empty values should be gracefully handled.' );
 	notEqual( init_val, $r.val(), 'event should still update the output' );
 
 });
@@ -301,9 +521,11 @@ test("basic input function", 1, function(){
 	$r.val(init_val);
 	$a.val(init_val);
 
-	$r.live_formula(a_sel, test_func);
+	// Start Test
+	$r.formula({ input: a_sel, formula: test_func });
 
 	$a.val(test_val).blur();
+	// Stop Test
 
 	equal( expected_val, $r.val(), 'the function should be applied' );
 
@@ -317,28 +539,37 @@ test('aggregate input function', 3, function(){
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = test_val_a + init_val   + init_val,
 		expected_value_2 = test_val_a + test_val_b + init_val,
-		expected_value_3 = test_val_a + test_val_b + test_val_c;
+		expected_value_3 = test_val_a + test_val_b + test_val_c,
+		actual_value_1, actual_value_2, actual_value_3;
 
 	$r.val(init_val);
 	$(input_sel).val(init_val);
 
-	$r.live_formula(input_sel, function(inputs){
-		var sum = 0;
-		$.each(inputs, function(k, v){
-//console.log('s='+(sum+v)+', added '+v+' for '+k);
-			sum = sum + v;
-		});
-		return sum;
+	// Start Test
+	$r.formula({
+		input: input_sel,
+		formula: function(inputs){
+			var sum = 0;
+			$.each(inputs, function(k, v){
+				sum = sum + v;
+			});
+			return sum;
+		}
 	});
 
 	$a.val(test_val_a).blur();
-	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+	actual_value_1 = $r.val();
 
 	$b.val(test_val_b).blur();
-	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+	actual_value_2 = $r.val();
 
 	$c.val(test_val_c).blur();
-	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+	actual_value_3 = $r.val();
+	// Stop Test
+
+	equal(expected_value_1, actual_value_1, 'the function should be continuously applied.');
+	equal(expected_value_2, actual_value_2, 'the function should be continuously applied.');
+	equal(expected_value_3, actual_value_3, 'the function should be continuously applied.');
 
 });
 
@@ -347,16 +578,23 @@ module('One selector and constant inputs', { setup: globalSetup });
 test('add constant value', 1, function(){
 
 	var	a_sel = '#a', $a = $(a_sel), $r = $('#r'),
-		init_val = 3, constant_val = 2, test_val = 7, expected_val = test_val + constant_val;
+		init_val = 3, constant_val = 2, test_val = 7, expected_val = test_val + constant_val, actual_val;
 
 	$r.val(init_val);
 	$a.val(init_val);
 
-	$r.live_formula({ a: a_sel, b: constant_val }, function(ins){ return ins.a + ins.b; });
+	// Start Test
+	$r.formula({
+		input: { a: a_sel, b: constant_val },
+		formula: function(ins){ return ins.a + ins.b; }
+	});
 
 	$a.val(test_val).blur();
 
-	equal( expected_val, $r.val(), 'the constant val should be pulled from the input' );
+	actual_val = $r.val();
+	// Stop Test
+
+	equal( expected_val, actual_val, 'the constant val should be pulled from the input' );
 
 });
 
@@ -410,21 +648,31 @@ test('avg', 3, function(){
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = (test_val_a + init_val   + init_val  )/3,
 		expected_value_2 = (test_val_a + test_val_b + init_val  )/3,
-		expected_value_3 = (test_val_a + test_val_b + test_val_c)/3;
+		expected_value_3 = (test_val_a + test_val_b + test_val_c)/3,
+		actual_value_1, actual_value_2, actual_value_3;
 
 	$r.val(init_val);
 	$(input_sel).val(init_val);
 
-	$r.live_formula(input_sel,util.avg);
+	// Start Test
+	$r.formula({
+		input:		input_sel,
+		formula:	$.formula.avg
+	});
 
 	$a.val(test_val_a).blur();
-	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+	actual_value_1 = $r.val();
 
 	$b.val(test_val_b).blur();
-	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+	actual_value_2 = $r.val();
 
 	$c.val(test_val_c).blur();
-	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+	actual_value_3 = $r.val();
+	// Stop Test
+
+	equal(expected_value_1, actual_value_1, 'the function should be continuously applied.');
+	equal(expected_value_2, actual_value_2, 'the function should be continuously applied.');
+	equal(expected_value_3, actual_value_3, 'the function should be continuously applied.');
 
 });
 
@@ -436,21 +684,31 @@ test('sum', 3, function(){
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = test_val_a + init_val   + init_val,
 		expected_value_2 = test_val_a + test_val_b + init_val,
-		expected_value_3 = test_val_a + test_val_b + test_val_c;
+		expected_value_3 = test_val_a + test_val_b + test_val_c,
+		actual_value_1, actual_value_2, actual_value_3;
 
 	$r.val(init_val);
 	$(input_sel).val(init_val);
 
-	$r.live_formula(input_sel,util.sum);
+	// Start Test
+	$r.formula({
+		input: input_sel,
+		formula: $.formula.sum
+	});
 
 	$a.val(test_val_a).blur();
-	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+	actual_value_1 = $r.val();
 
 	$b.val(test_val_b).blur();
-	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+	actual_value_2 = $r.val();
 
 	$c.val(test_val_c).blur();
-	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+	actual_value_3 = $r.val();
+	//Stop Test
+
+	equal(expected_value_1, actual_value_1, 'the function should be continuously applied.');
+	equal(expected_value_2, actual_value_2, 'the function should be continuously applied.');
+	equal(expected_value_3, actual_value_3, 'the function should be continuously applied.');
 
 });
 
@@ -462,21 +720,31 @@ test('max', 3, function(){
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = Math.max(test_val_a, init_val,   init_val  ),
 		expected_value_2 = Math.max(test_val_a, test_val_b, init_val  ),
-		expected_value_3 = Math.max(test_val_a, test_val_b, test_val_c);
+		expected_value_3 = Math.max(test_val_a, test_val_b, test_val_c),
+		actual_value_1, actual_value_2, actual_value_3;
 
 	$r.val(init_val);
 	$(input_sel).val(init_val);
 
-	$r.live_formula(input_sel,util.max);
+	// Start Test
+	$r.formula({
+		input: input_sel,
+		formula: $.formula.max
+	});
 
 	$a.val(test_val_a).blur();
-	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+	actual_value_1 = $r.val();
 
 	$b.val(test_val_b).blur();
-	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+	actual_value_2 = $r.val();
 
 	$c.val(test_val_c).blur();
-	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+	actual_value_3 = $r.val();
+	// Stop Test
+
+	equal(expected_value_1, actual_value_1, 'the function should be continuously applied.');
+	equal(expected_value_2, actual_value_2, 'the function should be continuously applied.');
+	equal(expected_value_3, actual_value_3, 'the function should be continuously applied.');
 
 });
 
@@ -488,21 +756,31 @@ test('min', 3, function(){
 		test_val_a = 7, test_val_b = 9, test_val_c = 4,
 		expected_value_1 = Math.min(test_val_a, init_val,   init_val  ),
 		expected_value_2 = Math.min(test_val_a, test_val_b, init_val  ),
-		expected_value_3 = Math.min(test_val_a, test_val_b, test_val_c);
+		expected_value_3 = Math.min(test_val_a, test_val_b, test_val_c),
+		actual_val_1, actual_val_2, actual_val_3;
 
 	$r.val(init_val);
 	$(input_sel).val(init_val);
 
-	$r.live_formula(input_sel,util.min);
+	// Start Test
+	$r.formula({
+		input: input_sel,
+		formula: $.formula.min
+	});
 
 	$a.val(test_val_a).blur();
-	equal(expected_value_1, $r.val(), 'the function should be continuously applied.');
+	actual_val_1 = $r.val();
 
 	$b.val(test_val_b).blur();
-	equal(expected_value_2, $r.val(), 'the function should be continuously applied.');
+	actual_val_2 = $r.val();
 
 	$c.val(test_val_c).blur();
-	equal(expected_value_3, $r.val(), 'the function should be continuously applied.');
+	actual_val_3 = $r.val();
+	// Stop Test
+
+	equal(expected_value_1, actual_val_1, 'the function should be continuously applied.');
+	equal(expected_value_2, actual_val_2, 'the function should be continuously applied.');
+	equal(expected_value_3, actual_val_3, 'the function should be continuously applied.');
 
 });
 
@@ -511,21 +789,31 @@ test('count', 3, function(){
 	var	input_sel = '.in',
 		$a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'),
 		init_val = 3,
-		test_val_a = 7, test_val_b = 9, test_val_c = 4;
+		test_val_a = 7, test_val_b = 9, test_val_c = 4,
+		actual_val_1, actual_val_2, actual_val_3;
 
 	$r.val(init_val);
 	$(input_sel).val(init_val);
 
-	$r.live_formula(input_sel,util.count);
+	// Start Test
+	$r.formula({
+		input: input_sel,
+		formula: $.formula.count
+	});
 
 	$a.val(test_val_a).blur();
-	equal(3, $r.val(), 'the function should be continuously applied.');
+	actual_val_1 = $r.val();
 
 	$b.val(test_val_b).blur();
-	equal(3, $r.val(), 'the function should be continuously applied.');
+	actual_val_2 = $r.val();
 
 	$c.val(test_val_c).blur();
-	equal(3, $r.val(), 'the function should be continuously applied.');
+	actual_val_3 = $r.val();
+	//Stop Test
+
+	equal(3, actual_val_1, 'the function should be continuously applied.');
+	equal(3, actual_val_2, 'the function should be continuously applied.');
+	equal(3, actual_val_3, 'the function should be continuously applied.');
 
 });
 
@@ -535,8 +823,14 @@ test('set precision on single selector', 2, function(){
 
 	var a_sel = '#a', $a = $(a_sel), $r = $('#r');
 
-	$r.live_formula(a_sel, util.copy, { precision: 'lowest' });
+	// Start Test
+	$r.formula({
+		input: a_sel,
+		formula: $.formula.copy,
+		precision: 'lowest'
+	});
 	$a.val( 2.5 ).blur();
+	// Stop Test
 
 	equal( 2, $a.data( 'form-u-la.precision' ), 'the precision should be set in the input element data' );
 	equal( 2, $r.data( 'form-u-la.precision' ), 'the precision should be set in the output element data' );
@@ -547,8 +841,14 @@ test('set precision on multiple selector', 4, function(){
 
 	var in_sel = '.in', $inputs = $(in_sel), $r = $('#r');
 
-	$r.live_formula(in_sel, util.sum, { precision: 'lowest' });
+	// Start Test
+	$r.formula({
+		input: in_sel,
+		formula: $.formula.sum,
+		precision: 'lowest'
+	});
 	$inputs.val( 2.5 ).first().blur();
+	// Stop Test
 
 	$inputs.each(function(){
 		equal( 2, $(this).data( 'form-u-la.precision' ), 'the precision should be set in each input element data' );
@@ -565,8 +865,18 @@ test('set precision on object of inputs', 4, function(){
 		$inputs = $('.in'),
 		$r = $('#r');
 
-	$r.live_formula({ a: a_sel, b: b_sel, c: c_sel }, util.sum, { precision: 'lowest' });
+	// Start Test
+	$r.formula({
+		input: {
+			a: a_sel,
+			b: b_sel,
+			c: c_sel
+		},
+		formula: $.formula.sum,
+		precision: 'lowest'
+	});
 	$inputs.val( 2.5 ).first().blur();
+	// Stop Test
 
 	$inputs.each(function(){
 		equal( 2, $(this).data( 'form-u-la.precision' ), 'the precision should be set in each input element data' );
@@ -581,11 +891,20 @@ test('truncate output to precision', 1, function(){
 		b_sel = '#b', $b = $(b_sel),
 		$r = $('#r');
 
-	$r.live_formula({ a: a_sel, b: b_sel }, function(i){
-		return (i.a + i.b)/2;
-	}, { precision: 'lowest' });
+	// Start Test
+	$r.formula({
+		input: {
+			a: a_sel,
+			b: b_sel
+		},
+		formula: function(i){
+			return (i.a + i.b)/2;
+		},
+		precision: 'lowest'
+	});
 	$a.val( "2.5" );
 	$b.val( "3.0" ).blur();
+	// Stop Test
 
 	equal( "2.8", $r.val(), 'the output should be truncated to the precision' );
 
@@ -601,9 +920,19 @@ test("One selector one number", 1, function(){
 	$a.val(init_val);
 	$b.val(test_constant);
 
-	$r.live_formula({ a: '#a', b: '#b' }, function(inputs){ return (inputs.a + inputs.b); });
+	// Start Test
+	$r.formula({
+		input: {
+			a: '#a',
+			b: '#b'
+		},
+		formula: function(i){
+			return (i.a + i.b);
+		}
+	});
 
 	$a.val(test_val).blur();
+	// Stop Test
 
 	equal( expected_val, $r.val(), 'the function should be applied to the named arguments' );
 
@@ -611,7 +940,7 @@ test("One selector one number", 1, function(){
 
 module('Multiple formulas', { setup: globalSetup });
 
-test('Two copy formulas', 2, function(){
+test('Two parallel copy formulas', 2, function(){
 
 	var $a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'), init_val = 3, test_val_a = 7, test_val_b = 9;
 
@@ -620,14 +949,37 @@ test('Two copy formulas', 2, function(){
 	$c.val(init_val);
 	$r.val(init_val);
 
-	$c.live_formula('#a');
-	$r.live_formula('#b');
+	// Start Test
+	$c.formula({ input: '#a' });
+	$r.formula({ input: '#b' });
 
 	$a.val(test_val_a).blur();
 	$b.val(test_val_b).blur();
+	// Stop Test
 
 	equal( test_val_a, $c.val(), 'the formulas should not interfere.' );
 	equal( test_val_b, $r.val(), 'the formulas should not interfere.' );
+
+});
+
+test('Two serial copy formulas', 2, function(){
+
+	var $a = $('#a'), $b = $('#b'), $c = $('#c'), $r = $('#r'), init_val = 3, test_val = 7;
+
+	$a.val(init_val);
+	$b.val(init_val);
+	$c.val(init_val);
+	$r.val(init_val);
+
+	// Start Test
+	$c.formula({ input: '#a' });
+	$r.formula({ input: '#c' });
+
+	$a.val(test_val).blur();
+	// Stop Test
+
+	equal( test_val, $c.val(), 'the formulas should not interfere.' );
+	equal( test_val, $r.val(), 'the formulas should follow-on.' );
 
 });
 
@@ -646,25 +998,33 @@ test('add class after formula', 4, function(){
 		expected_value_1 = test_val_a,
 		expected_value_2 = test_val_a + test_val_b,
 		expected_value_3 = test_val_a + test_val_b + test_val_c,
-		expected_value_4 = test_val_b + test_val_c;
+		expected_value_4 = test_val_b + test_val_c,
+		actual_value_1, actual_value_2, actual_value_3, actual_value_4; 
 
 	$('input').val(init_val);
 
+	// Start Test
 	$a.addClass(test_cls);
-	$r.live_formula(test_sel,util.sum);
+	$r.formula({ input: test_sel, formula: $.formula.sum });
 
 	$a.val(test_val_a).blur();
-	equal( expected_value_1, $r.val(), 'the formula should be applied to elements on the page' );
+	actual_value_1 = $r.val();
 
 	$b.addClass(test_cls).val(test_val_b).blur();
-	equal( expected_value_2, $r.val(), 'the formula should be applied to new elements' );
+	actual_value_2 = $r.val();
 
 	$c.addClass(test_cls).val(test_val_c).blur();
-	equal( expected_value_3, $r.val(), 'the formula should be applied to new elements' );
+	actual_value_3 = $r.val();
 
 	$a.removeClass(test_cls);
 	$b.blur();
-	equal( expected_value_4, $r.val(), 'the formula should not be applied to removed elements' );
+	actual_value_4 = $r.val();
+	// Stop Test
+
+	equal( expected_value_1, actual_value_1, 'the formula should be applied to elements on the page' );
+	equal( expected_value_2, actual_value_2, 'the formula should be applied to new elements' );
+	equal( expected_value_3, actual_value_3, 'the formula should be applied to new elements' );
+	equal( expected_value_4, actual_value_4, 'the formula should not be applied to removed elements' );
 
 });
 
@@ -687,22 +1047,29 @@ test('add elements after formula', 4, function(){
 
 	$('input').val(init_val);
 
+	// Start Test
 	$a.addClass(test_cls);
-	$r.live_formula(test_sel,util.sum);
+	$r.formula({ input: test_sel, formula: $.formula.sum });
 
 	$a.val(test_val_a).blur();
-	equal( expected_value_1, $r.val(), 'the formula should be applied to elements on the page' );
+	actual_value_1 = $r.val();
 
 	$b.appendTo('form').val(test_val_b).blur();
-	equal( expected_value_2, $r.val(), 'the formula should be applied to new elements' );
+	actual_value_2 = $r.val();
 
 	$('form').append(c);
 	$(new_el_sel).val(test_val_c).blur();
-	equal( expected_value_3, $r.val(), 'the formula should be applied to new elements' );
+	actual_value_3 = $r.val();
 
 	$a.removeClass(test_cls);
 	$b.blur();
-	equal( expected_value_4, $r.val(), 'the formula should not be applied to removed elements' );
+	actual_value_4 = $r.val();
+	// Stop Test
+
+	equal( expected_value_1, actual_value_1, 'the formula should be applied to elements on the page' );
+	equal( expected_value_2, actual_value_2, 'the formula should be applied to new elements' );
+	equal( expected_value_3, actual_value_3, 'the formula should be applied to new elements' );
+	equal( expected_value_4, actual_value_4, 'the formula should not be applied to removed elements' );
 
 });
 
@@ -715,9 +1082,15 @@ test("Set bind event", 1, function(){
 	$r.val(init_val);
 	$a.val(init_val);
 
-	$r.live_formula('#a', function(input){ return (input); }, { bind: 'keyup' });
+	// Start Test
+	$r.formula({
+		input: '#a',
+		formula: function(input){ return (input); },
+		bind: 'keyup'
+	});
 
 	$a.val(test_val).keyup();
+	// Stop Test
 
 	equal( test_val, $r.val(), 'the newly bound event should activate the calculation' );
 
@@ -730,10 +1103,16 @@ test('taintable', 2, function(){
 	$a.val(init_val);
 	$r.val(init_val);
 
-	$r.live_formula('#a', function(i){ return i[0]; }, { taintable: true });
+	// Start Test
+	$r.formula({
+		input: '#a',
+		formula: function(i){ return i[0]; },
+		taintable: true
+	});
 
 	$r.val(taint_val).change();
 	$a.val(test_val).blur();
+	// Stop Test
 
 	equal( taint_val, $r.val(), 'tainted values should not be updated.' );
 

@@ -2,91 +2,298 @@
 <html>
 <head>
 	<title>Examples - Count Form-u-la jQuery Plugin</title>
-	<script type="text/javascript" src="http://code.jquery.com/jquery-latest.js"></script>
+	<script type="text/javascript" src="lib/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="lib/jquery/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="src/jquery.form-u-la.js"></script>
+	<style>
+		body {
+			padding: 0 10%;
+		}
+		code pre {
+			padding: 0 10%;
+		}
+	</style>
 </head>
 <body>
 	<h4>Count Form-u-la jQuery Plugin</h4>
-	<h1>Example Code</h1>
+
+	<ol>
+		<li>
+			<a href="#usage">Usage</a>
+			<ol>
+				<li><a href="#output">Output</a></li>
+				<li><a href="#input">Input</a></li>
+				<li><a href="#formula">Formula</a></li>
+			</ol>
+		</li>
+		<li>
+			<a href="#options">Options</a>
+			<ol>
+				<li><a href="#bind">Bind</a></li>
+				<li><a href="#taintable">Taintable</a></li>
+				<li><a href="#precision">Precision</a></li>
+			</ol>
+		</li>
+		<li><a href="#examples">Examples</a></li>
+	</ol>
+
+	<h1><a name="usage">Usage</a></h1>
+
+	<code>
+		$someFormField.formula({ input: input, [formula: function], [options] });
+	</code>
+	<h3><a name="output">Output</a></h3>
+	<p>
+		The object the widget lives on receives the output of the formula function. The value of each of the inputs are passed in to this formula.  The output is sent by way of a call to val().  (@TODO: add support for text())
+	</p>
+	<h3><a name="input">Input</a></h3>
+	<p>
+		Input can be passed in a variety of ways.  Of them, passing as a selector will be the most efficient as well as live.  Currently supported input types are:
+	</p>
+	<ul>
+		<li>jQuery selector, e.g. <code>$o.formula({ input: '.subtotals' });</code></li>
+		<li>jQuery object, e.g. <code>$o.formula({ input: $subtotals });</code></li>
+		<li>JavaScript literal, e.g. <code>$o.formula({ input: 5 });</code></li>
+		<li>Object with named parameters, each of which can be any of the above.
+			<code><pre>
+$o.formula({
+	input: {
+		subtotal: '#subtotal',
+		tax:	  '#tax',
+		surcharge: 5
+	}
+}, $.formula.sum);
+</pre>			</code>
+		</li>
+	</ul>
+	<p>
+		The value of each jQuery type of input is retrieved with a call to val().  (@TODO: add support for text())
+	<p>
+	<h3><a name="formula">Formula</a></h3>
+	<p>
+		The second parameter is the formula to perform on the input.  It is passed as an ordinary JavaScript function, and it must be unary (though the formula itself need not be).  If there is only a single parameter to the formula (after re-resolving all selectors at compute-time), this function is called with that value.
+	</p>
+	<p>
+		In any other case, the input will be passed as an object, with named parameters indicating each input according to the following rules:
+	</p>
+	<ul>
+		<li>If the inputs were passed in as an object, they will be passed to the function as an object, with the value of each input placed at its named index.</li>
+		<li>jQuery selectors that resolve to a single input are passed as a single value to the function.</li>
+		<li>jQuery selectors that resolve to multiple inputs are passed as an object of values with numeric keys.</li>
+	</ul>
+	<p>
+		Before invoking the callback function, Count Form-u-la will set a property called <code>unary</code> so that the function can determine whether it is being called in a unary context.  For example, the following code transfers the value of the first form field with the <code>line_items</code> class to jQuery object <code>$o</code>, irrespective of whether there is only one, or more than one on the page.  (note that the function need not handle the nullary case; this is a user-oriented plugin, so the values are only recalculated when an input changes)
+	</p>
+	<code><pre>
+function findValue(input){
+	if( findValue.unary ){
+		return input;
+	}
+	else {
+		return input[0];
+	}
+}
+
+$o.formula({ input: '.line_items', formula: findValue });
+</pre>	</code>
+	<p>Or simply,</p>
+	<code><pre>
+$o.formula({
+	input: '.line_items',
+	formula: function(input){
+		return arguments.callee.unary ? input : input[0];
+	}
+});
+</pre>	</code>
+	<p>
+		After re-reading this description, it sounds like this behavior should be changed so that Count Form-u-la consumers can blindly apply <code>jQuery.each</code>. (@TODO)
+	</p>
+
+	<p>
+		As seen in the above example, the function must simply return the value, and Count Form-u-la takes care of the rest.  Because everything is by value in the function, specifying complex equations becomes very simple.
+	</p>
+	<code><pre>
+function quadratic(i){
+	return (-i.b + Math.sqrt( i.b * i.b - 4 * i.a * i.c ))/(2 * i.a)
+}
+$x.formula({
+	input: {
+		a: '#x_2_coefficient',
+		b: '#x_coefficient',
+		c: '#constant'
+	},
+	function: quadratic
+});
+</pre>	</code>
+
+	<p>Presumably the HTML to support this would be something along the lines of</p>
+	<code><pre>
+&lt;form&gt;
+	0 =	&lt;input type="text" id="x_2_coefficient"	/&gt; * x &lt;sup&gt; 2 &lt;/sup&gt; +
+		&lt;input type="text" id="x_coefficient"	/&gt; * x +
+		&lt;input type="text" id="constant"	/&gt;
+&lt;/form&gt;
+</pre>	</code>
+
+	<h3><a name="options">Options</a></h3>
+
+	<h4><a name="bind">Bind</a></h4>
+
+	<code><pre>
+$o.formula({
+	input:		'.input',
+	formula:	someFunction,
+	bind:		'keyup'		// For a REALLY live form
+});
+</pre>	</code>
+
+	<p>
+		Choose which event on the input fields to bind recalculation of the output field to.  The default is 'blur', and in my opinion that's the only one you'll ever need.
+	</p>
+
+	<h4><a name="taintable">Taintable</a></h4>
+
+	<code><pre>
+$o.formula({
+	input:		'.input',
+	formula:	someFunction,
+	taintable:	true
+});
+</pre>	</code>
+
+	<p>
+		By default, Count Form-u-la disables output fields to discourage the user from mucking about in them.  However, sometimes there are good reasons to allow a user to edit a field that otherwise is auto-calculated.  For those situations, there is taintable.
+	</p>
+	<p>
+		At the moment, the only way to untaint the field is by literally removing the entry in the jQuery data store.  Feel free to use that technique.  (TODO: Expose some way to untaint a field.)
+	</p>
+
+	<h4><a name="precision">Precision</a></h4>
+
+	<code><pre>
+$o.formula({
+	input:		'.inputs',
+	formula:	someFunction,
+	precision:	'lowest'	// standard scientific usage
+});
+</pre>	</code>
+
+	<p>Strategy for precision correction.  Defaults to the scientific definition of the term.  (TODO: Expose decimal places style of calculating precision, since that's what everybody thinks of.)  Choices:</p>
+	<dl>
+		<dt><code>ignore</code></dt>
+		<dd>Perform no precision handling.  Default.</dd>
+		<dt><code>highest</code></dt>
+		<dd>Round to the most digits seen among inputs.</dd>
+		<dt><code>lowest</code></dt>
+		<dd>Round to the least digits seen among inputs.</dd>
+		<dt><code>function(a,b);</code></dt>
+		<dd>A custom precision function.  Given the precision of two inputs, returns the precision of the output.  Useful for hacking a fixed precision, e.g. <code>function(a,b){ return 3; }</code>, which would probably be more useful with decimal places.</dd>
+	</dl>
+
+	<h1><a name="examples">Examples</a></h1>
 
 	<h3>Basic sum</h3>
 	<form>
 
-		in: <input type="text" class="number in1"/>
+		.in: <input type="text" class="number in1"/>
 		<input type="text" class="number in1"/>
-		<input type="text" class="number in1"/>
-		sum: <input type="text" class="number out" id="sum1"/>
+		<input type="text" class="number in1"/><br />
+		#sum: <input type="text" class="number out" id="sum1"/>
 
 	</form>
-	<code>
-		$('#sum').live_formula( '.in', util.sum );
-	</code>
+	<code><pre>
+$('#sum').formula({
+	input:		'.in',
+	formula:	$.formula.sum
+});
+</pre>	</code>
 	<script>
-		$('#sum1').live_formula( '.in1', util.sum );
+		$('#sum1').formula({ input: '.in1', formula: $.formula.sum });
 	</script>
 
 	<h3>Bind calculation to keyupevent, Taintable outputs can be changed</h3>
 	<form>
 
-		in: <input type="text" class="number in2"/>
+		.in: <input type="text" class="number in2"/>
 		<input type="text" class="number in2"/>
-		<input type="text" class="number in2"/>
-		sum: <input type="text" class="number out" id="sum2"/>
+		<input type="text" class="number in2"/><br />
+		#sum: <input type="text" class="number out" id="sum2"/>
 
 	</form>
-	<code>
-		$('#sum').live_formula( '.in', util.sum, { bind: 'keyup', taintable: true } );
-	</code>
+	<code><pre>
+$('#sum').formula({
+	input:		'.in',
+	formula:	$.formula.sum,
+	bind:		'keyup',
+	taintable:	true
+});
+</pre>	</code>
 	<script>
-		$('#sum2').live_formula( '.in2', util.sum, { bind: 'keyup', taintable: true } );
+		$('#sum2').formula({ input: '.in2', formula: $.formula.sum, bind: 'keyup', taintable: true });
 	</script>
 
 	<h3>Basic average</h3>
 	<form>
 
-		in: <input type="text" class="number in3"/>
+		.in: <input type="text" class="number in3"/>
 		<input type="text" class="number in3"/>
-		<input type="text" class="number in3"/>
-		avg: <input type="text" class="number out" id="avg3"/>
+		<input type="text" class="number in3"/><br />
+		#avg: <input type="text" class="number out" id="avg3"/>
 
 	</form>
-	<code>
-		$('#avg').live_formula( '.in', util.avg );
-	</code>
+	<code><pre>
+$('#avg').formula({
+	input:		'.in',
+	formula:	$.formula.avg
+});
+</pre>	</code>
 	<script>
-		$('#avg3').live_formula( '.in3', util.avg );
+		$('#avg3').formula({ input: '.in3', formula: $.formula.avg });
 	</script>
 
 	<h4>Keep track of significant figures</h4>
 	<form>
 
-		in: <input type="text" class="number in4"/>
+		.in: <input type="text" class="number in4"/>
 		<input type="text" class="number in4"/>
-		<input type="text" class="number in4"/>
-		avg: <input type="text" class="number out" id="avg4"/>
+		<input type="text" class="number in4"/><br />
+		#avg: <input type="text" class="number out" id="avg4"/>
 
 	</form>
-	<code>
-		$('#avg').live_formula( '.in', util.avg, { precision: 'lowest' } );
-	</code>
+	<code><pre>
+$('#avg').formula({
+	input:		'.in',
+	formula:	$.formula.avg,
+	precision:	'lowest'
+});
+</pre>	</code>
 	<script>
-		$('#avg4').live_formula( '.in4', util.avg, { precision: 'lowest' } );
+		$('#avg4').formula({ input: '.in4', formula: $.formula.avg, precision: 'lowest' });
 	</script>
 
 	<h4>Named inputs</h4>
 	<form>
 
-		a: <input type="text" class="number in" id="a" value="0" />
-		b: <input type="text" class="number in" id="b" value="0" />
-		c: <input type="text" class="number in" id="c" value="0" />
-		result: <input type="text" class="number out" id="result"/>
+		#a: <input type="text" class="number in" id="a" value="0" />
+		#b: <input type="text" class="number in" id="b" value="0" />
+		#c: <input type="text" class="number in" id="c" value="0" /><br />
+		#result: <input type="text" class="number out" id="result"/>
 
 	</form>
-	<code>
-		$('#result').live_formula({ a: '#a', b: '#b', c: '#c' }, function(i){ return i.a + i.b + i.c });
-	</code>
+	<code><pre>
+$('#result').formula({
+	input: {
+		a: '#a',
+		b: '#b',
+		c: '#c'
+	},
+	formula: function(i){
+		return i.a + i.b + i.c
+	}
+});
+</pre>	</code>
 	<script>
-		$('#result').live_formula({ a: '#a', b: '#b', c: '#c' }, function(i){ return i.a + i.b + i.c });
+		$('#result').formula({ input:{ a: '#a', b: '#b', c: '#c' }, formula: function(i){ return i.a + i.b + i.c } });
 	</script>
 
 
