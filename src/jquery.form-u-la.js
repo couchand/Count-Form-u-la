@@ -140,7 +140,7 @@
 				return;
 			}
 
-			p = util.getPrecision( strVal );
+			p = this._getPrecision( strVal );
 
 			if ( 1 === size ){
 				theInput.data( 'form-u-la.precision', p );
@@ -152,7 +152,7 @@
 				return [x, precision];
 			}
 			else if ( 'undefined' !== typeof defaultValue ){
-				return [defaultValue, util.getPrecision( defaultValue )];
+				return [defaultValue, this._getPrecision( defaultValue )];
 			}
 		},
 
@@ -382,12 +382,6 @@ handler = function(){
 		});
 	}
 */
-	value = formula( locals );
-//if ( 'number' !== typeof value ){
-//console.log(value);
-//}
-//	value = value.toFixed(precision);
-//console.log(value);
 
 	self.options.formula.unary = !( $.isPlainObject( locals ) );
 
