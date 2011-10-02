@@ -155,19 +155,19 @@
 				return;
 			}
 
-			p = this._getPrecision( strVal );
+			p = self._getPrecision( strVal );
 
 			if ( 1 === size ){
 				theInput.data( 'form-u-la.precision', p );
 			}
 
-			this._precision = this._precision_func( this._precision, p );
+			self._precision = self._precision_func( self._precision, p );
 
 			if ( !$.isNaN(x) ){
 				return x;
 			}
-			else if ( 'undefined' !== typeof this.options.defaultValue ){
-				return this.options.defaultValue;
+			else if ( 'undefined' !== typeof self.options.defaultValue ){
+				return self.options.defaultValue;
 			}
 		},
 
@@ -233,6 +233,31 @@ if ( 'undefined' === typeof inputs_in ){
 	return;
 }
 
+self._precision_func = function(a, b){
+	var pf =	($.isFunction(self.options.precision)) ?
+				self.options.precision
+			:('lowest' == self.options.precision) ?
+				function(a, b){ return (a < b) ? a : b; }
+			:('highest' == self.options.precision) ?
+				function(a, b){ return (a > b) ? a : b; }
+			:('ignore' == self.options.precision) ?
+				function(a, b){ return Number.NaN; }
+			:	function(a, b){ return Number.NaN; };
+
+	return	('undefined' === typeof a || null === a) ? (
+			('undefined' === typeof b || null === b) ?
+				null
+			:
+				b
+		) : (
+			('undefined' === typeof b || null === b) ?
+				a
+			:
+				pf(a,b)
+		)
+
+};
+
 handler = function(){
 
 	var	locals = {}, value, x, t,
@@ -247,29 +272,7 @@ handler = function(){
 		return;
 	}
 
-	self._precision_func = function(a, b){
-		var pf =	('ignore' === self.options.precision) ?
-					function(a, b){ return Number.NaN; }
-				:('lowest' === self.options.precision) ?
-					function(a, b){ return (a < b) ? a : b; }
-				:('highest' === self.options.precision) ?
-					function(a, b){ return (a > b) ? a : b; }
-				:
-					self.options.precision;
-
-		return	('undefined' === typeof a) ? (
-				('undefined' === typeof b) ?
-					null
-				:
-					b
-			) : (
-				('undefined' === typeof b) ?
-					a
-				:
-					pf(a,b)
-			)
-
-	};
+	self._precision = null;
 
 	t = self._resolve_input(inputs_in);
 	input = t[0]; $inputs = t[1]; selectors = t[2];
@@ -278,121 +281,6 @@ handler = function(){
 	if( 'undefined' === typeof locals ){
 		return;
 	}
-
-/*
-	if ( !!inputs.jquery && 1 == inputs.size() ){
-		x = parseFloat( inputs.val() );
-		p = self._getPrecision( inputs.val() );
-		inputs.data( 'form-u-la.precision', p );
-		precision = precision_func( precision, p );
-		if ( !$.isNaN(x) ){
-			locals = x; //= util.evaluateInput( inputs.val(), precision_func, inputs );
-		}
-		else if ( options.defaultValue ){
-			locals = options.defaultValue;
-		}
-	}
-	else if ( 'number' === typeof inputs ){
-		x = inputs;
-		p = self._getPrecision( '' + x );
-		precision = precision_func( precision, p );
-		if ( !$.isNaN(x) ){
-			locals = x; //= util.evaluateInput( inputs, precision_func );
-		}
-		else if ( options.defaultValue ){
-			locals = options.defaultValue;
-		}
-	}
-	else {
-		$.each(inputs, function(k, v){
-
-			if ( 'number' === typeof v ){
-
-				x = v;
-				p = self._getPrecision( '' + x );
-				precision = precision_func( precision, p );
-				if ( !$.isNaN(x) ){
-					locals[k] = x; //= util.evaluateInput( '' + x, precision_func );
-				}
-				else if ( options.defaultValue ){
-					locals[k] = options.defaultValue;
-				}
-			}
-			else if ( !!v.jquery ){
-				if ( 1 == v.size() ){
-					x = parseFloat( v.val() );
-					p = self._getPrecision( v.val() );
-					v.data( 'form-u-la.precision', p );
-					precision = precision_func( precision, p );
-					if ( !$.isNaN(x) ){
-						locals[k] = x; //= util.evaluateInput( v.val(), precision_func, v );
-					}
-					else if ( options.defaultValue ){
-						locals[k] = options.defaultValue;
-					}
-				}
-				else if ( 1 < v.size() ){
-					if ( 1 == input_count ){
-						v.each(function(i){
-							var $t = $(this), val = $t.val();
-							x = parseFloat( val );
-							p = self._getPrecision( val );
-							$t.data( 'form-u-la.precision', p );
-							precision = precision_func( precision, p );
-							if ( !$.isNaN(x) ){
-								locals[i] = x; //= util.evaluateInput( $(this).val(), precision_func, $(this) );
-							}
-							else if ( options.defaultValue ){
-								locals[i] = options.defaultValue;
-							}
-						});
-					}
-					else {
-						locals[k] = {};
-						v.each(function(i){
-							var $t = $(this), val = $t.val();
-							x = parseFloat( val );
-							p = self._getPrecision( val );
-							$t.data( 'form-u-la.precision', p );
-							precision = precision_func( precision, p );
-							if ( !$.isNaN(x) ){
-								locals[k][i] = x; //= util.evaluateInput( $(this).val(), precision_func, $(this) );
-							}
-							else if ( options.defaultValue ){
-								locals[k][i] = options.defaultValue;
-							}
-						});
-					}
-				}
-			}
-			else {
-				$tryWrapping = $(v);
-
-				if ( $tryWrapping.size() > 0 ){
-					x = parseFloat( $tryWrapping.val() );
-					if ( !$.isNaN(x) ){
-						locals[k] = x;
-						p = self._getPrecision( $tryWrapping.val() );
-						$tryWrapping.data( 'form-u-la.precision', p );
-						precision = precision_func( precision, p );
-					}
-					else if ( options.defaultValue ){
-						locals[k] = options.defaultValue;
-					}
-				}
-				else {
-					x = parseFloat( v );
-					if ( !$.isNaN(x) ){
-						locals[k] = x;
-					}
-					else if ( options.defaultValue ){
-						locals[k] = options.defaultValue;
-					}
-				}
-			}
-		});
-	}
-*/
 
 	self.options.formula.unary = !( $.isPlainObject( locals ) );
 
