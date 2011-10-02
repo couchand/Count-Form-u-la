@@ -1126,9 +1126,15 @@ test('default value', 1, function(){
 
 	$r.val('');
 
-	$r.live_formula('#a', util.copy, { defaultValue: default_val });
+	// Start Test
+	$r.formula({
+		input: '#a',
+		formula: $.formula.copy,
+		defaultValue: default_val
+	});
 
 	$a.val('').blur();
+	// Stop Test
 
 	equal( default_val, $r.val(), 'Non-numeric inputs should be defaulted' );
 
@@ -1140,9 +1146,15 @@ test('default value zero', 1, function(){
 
 	$r.val('');
 
-	$r.live_formula('#a', util.copy, { defaultValue: default_val });
+	// Start Test
+	$r.formula({
+		input: '#a',
+		formula: $.formula.copy,
+		defaultValue: default_val
+	});
 
 	$a.val('').blur();
+	// Stop Test
 
 	equal( default_val, $r.val(), 'Non-numeric inputs should be defaulted' );
 

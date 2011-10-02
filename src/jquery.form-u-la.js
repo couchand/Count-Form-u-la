@@ -111,9 +111,20 @@
 
 	$.widget( 'uix.formula', {
 
+		_evaluateInputs:
+		  function( theInputs, wrap ){
+
+			var t = {}, self = this;
+			$.each(theInputs, function(key){
+				t[key] = self._evaluateInput( wrap ? $(this) : this );
+			});
+			return t;
+
+		},
+
 		_evaluateInput:
-		  function ( theInput ){
-			var strVal,
+		  function( theInput ){
+			var strVal, t, self = this,
 			    x, p, size;
 
 			if ( !!theInput.jquery ){
@@ -123,8 +134,7 @@
 					x = parseFloat(strVal);
 				}
 				else if ( 1 < size ){
-					// TODO
-					return;
+					return self._evaluateInputs( theInput, true );
 				}
 			}
 			else if ( 'string' === typeof theInput ){
@@ -135,7 +145,12 @@
 				x = theInput;
 				strVal = '' + x;
 			}
+			else if ( $.isPlainObject( theInput ) ){
+				return self._evaluateInputs( theInput, false );
+			}
 			else {
+		//		console.log( typeof theInput );
+		//		console.log( theInput );
 				return;
 			}
 
