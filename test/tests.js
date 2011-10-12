@@ -502,7 +502,7 @@ test('empty values', 3, function(){
 	$a.val('').blur();
 	// Stop Test
 
-	ok( !$.isNaN( $r.val() ), 'The output should not get NaN.' );
+	ok( !isNaN( $r.val() ), 'The output should not get NaN.' );
 	notEqual( 'NaN' !== $r.val(), 'empty values should be gracefully handled.' );
 	notEqual( init_val, $r.val(), 'event should still update the output' );
 
